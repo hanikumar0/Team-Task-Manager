@@ -1,8 +1,10 @@
 'use client';
 
 import { useAuthStore } from '@/store/useAuthStore';
-import AdminDashboard from '@/components/AdminDashboard';
-import MemberDashboard from '@/components/MemberDashboard';
+import dynamic from 'next/dynamic';
+
+const AdminDashboard = dynamic(() => import('@/components/AdminDashboard'), { ssr: false });
+const MemberDashboard = dynamic(() => import('@/components/MemberDashboard'), { ssr: false });
 
 export default function DashboardPage() {
     const { user } = useAuthStore();

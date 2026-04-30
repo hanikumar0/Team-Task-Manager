@@ -38,7 +38,7 @@ import { Badge } from '@/components/ui/badge';
 const COLORS = ['#6366f1', '#fbbf24', '#f87171', '#10b981'];
 
 export default function AdminDashboard() {
-    const { data: stats, isLoading } = useQuery({
+    const { data: stats, isLoading, isError } = useQuery({
         queryKey: ['admin-stats'],
         queryFn: async () => {
             const { data } = await api.get('/dashboard/stats');
@@ -47,6 +47,7 @@ export default function AdminDashboard() {
     });
 
     if (isLoading) return <DashboardSkeleton />;
+    if (isError) return <div className="p-8 text-center bg-red-50 text-red-600 rounded-xl border border-red-100">Failed to load dashboard data. Please check your database connection.</div>;
 
     const statusData = Object.entries(stats?.statusDistribution || {}).map(([name, value]) => ({ name, value }));
 
@@ -142,7 +143,7 @@ export default function AdminDashboard() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-semibold">{task.title}</p>
-                                        <p className="text-[10px] text-slate-500">{task.project?.name}</p>
+                                        <p className="text-[10px] text-slate-500">{task.projectId?.name}</p>
                                     </div>
                                 </div>
                                 <Badge variant="outline" className="text-xs">{task.status}</Badge>

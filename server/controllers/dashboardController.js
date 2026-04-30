@@ -1,6 +1,7 @@
 const Project = require('../models/Project');
 const Task = require('../models/Task');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 exports.getDashboardStats = async (req, res) => {
     try {
@@ -8,7 +9,8 @@ exports.getDashboardStats = async (req, res) => {
         
         // Base queries
         const projectQuery = isAdmin ? {} : { $or: [{ owner: req.user.id }, { members: req.user.id }] };
-        const taskQuery = isAdmin ? {} : { assignedTo: req.user.id };
+        const taskQuery = isAdmin ? {} : { assignedTo: new mongoose.Types.ObjectId(req.user.id) };
+        const aggregateQuery = isAdmin ? {} : { assignedTo: new mongoose.Types.ObjectId(req.user.id) };
         
         // Parallel fetching for performance
         const [
@@ -30,7 +32,7 @@ exports.getDashboardStats = async (req, res) => {
             Task.find(taskQuery)
                 .sort({ createdAt: -1 })
                 .limit(5)
-                .populate('project', 'name')
+                .populate('projectId', 'name')
                 .populate('assignedTo', 'name avatar')
         ]);
 

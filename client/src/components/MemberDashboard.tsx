@@ -29,7 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MemberDashboard() {
-    const { data: stats, isLoading } = useQuery({
+    const { data: stats, isLoading, isError } = useQuery({
         queryKey: ['member-stats'],
         queryFn: async () => {
             const { data } = await api.get('/dashboard/stats');
@@ -38,6 +38,7 @@ export default function MemberDashboard() {
     });
 
     if (isLoading) return <DashboardSkeleton />;
+    if (isError) return <div className="p-8 text-center bg-red-50 text-red-600 rounded-xl border border-red-100">Failed to load dashboard data. Please check your database connection.</div>;
 
     const dashboardStats = [
         { label: 'My Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-indigo-600', bg: 'bg-indigo-100' },
@@ -105,7 +106,7 @@ export default function MemberDashboard() {
                                 <div key={task._id} className="flex items-center justify-between p-3 bg-white border rounded-lg hover:shadow-sm transition-shadow">
                                     <div>
                                         <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                                        <p className="text-[10px] text-slate-500">{task.project?.name}</p>
+                                        <p className="text-[10px] text-slate-500">{task.projectId?.name}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className={task.priority === 'Urgent' ? 'text-red-600 bg-red-50' : 'text-blue-600 bg-blue-50'}>
