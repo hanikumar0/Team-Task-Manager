@@ -79,3 +79,23 @@ exports.getUsers = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Prevent deleting other admins
+        if (user.role === 'Admin') {
+            return res.status(403).json({ message: 'Cannot delete an administrator' });
+        }
+
+        await user.deleteOne();
+        res.json({ message: 'User removed successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

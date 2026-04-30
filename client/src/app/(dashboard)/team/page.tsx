@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { 
     Table, 
@@ -11,10 +11,16 @@ import {
     TableHeader, 
     TableRow 
 } from '@/components/ui/table';
+import { 
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Mail, Shield, UserPlus, MoreHorizontal, Loader2 } from 'lucide-react';
+import { Mail, Shield, UserPlus, MoreHorizontal, Loader2, Trash2 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import InviteMemberDialog from '@/components/InviteMemberDialog';
@@ -23,6 +29,7 @@ export default function TeamPage() {
     const [open, setOpen] = useState(false);
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'Admin';
+    const queryClient = useQueryClient();
 
     const { data: members, isLoading } = useQuery({
         queryKey: ['team-members'],
@@ -31,6 +38,13 @@ export default function TeamPage() {
             return data;
         },
         enabled: isAdmin
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (userId: string) => api.delete(`/auth/${userId}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['team-members'] });
+        }
     });
 
     if (!isAdmin) {
@@ -111,9 +125,28 @@ export default function TeamPage() {
                                         {new Date(member.createdAt).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <button className="text-slate-400 hover:text-slate-600 p-1">
-                                            <MoreHorizontal size={20} />
-                                        </button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger>
+                                                <div className="text-slate-400 hover:text-slate-600 p-1 outline-none cursor-pointer">
+                                                    <MoreHorizontal size={20} />
+                                                </div>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-40">
+                                                <DropdownMenuItem 
+                                                    className={`text-red-600 focus:text-red-600 ${member.role === 'Admin' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                    onClick={() => {
+                                                        if (member.role !== 'Admin') {
+                                                            if (confirm(`Are you sure you want to remove ${member.name}?`)) {
+                                                                deleteMutation.mutate(member._id);
+                                                            }
+                                                        }
+                                                    }}
+                                                    disabled={member.role === 'Admin'}
+                                                >
+                                                    <Trash2 size={16} className="mr-2" /> Remove Member
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))
