@@ -83,9 +83,9 @@ export default function MemberDashboard() {
                             My Weekly Progress
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[250px] min-h-[250px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={stats?.trend || []}>
+                    <CardContent className="h-[250px] min-h-[250px] w-full overflow-hidden">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                            <LineChart data={stats?.productivity || []}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} />
                                 <YAxis axisLine={false} tickLine={false} />

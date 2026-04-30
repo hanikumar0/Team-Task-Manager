@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,8 +10,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Users, Calendar, MoreVertical, ExternalLink } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import Link from 'next/link';
+import CreateProjectDialog from '@/components/CreateProjectDialog';
 
 export default function ProjectsPage() {
+    const [open, setOpen] = useState(false);
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'Admin';
     
@@ -46,7 +49,7 @@ export default function ProjectsPage() {
                     <p className="text-slate-500">{isAdmin ? 'Manage and track all your active projects.' : 'View projects you are currently assigned to.'}</p>
                 </div>
                 {isAdmin && (
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={() => setOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" /> New Project
                     </Button>
                 )}
@@ -59,11 +62,15 @@ export default function ProjectsPage() {
                     </div>
                     <CardTitle className="text-xl">No projects found</CardTitle>
                     <CardDescription className="mt-2">
-                        Get started by creating your first project and inviting your team.
+                        {isAdmin 
+                            ? 'Get started by creating your first project and inviting your team.' 
+                            : 'You are not assigned to any projects yet. Contact your administrator.'}
                     </CardDescription>
-                    <Button className="mt-6 bg-indigo-600 hover:bg-indigo-700">
-                        Create Project
-                    </Button>
+                    {isAdmin && (
+                        <Button className="mt-6 bg-indigo-600 hover:bg-indigo-700" onClick={() => setOpen(true)}>
+                            Create Project
+                        </Button>
+                    )}
                 </Card>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -117,6 +124,7 @@ export default function ProjectsPage() {
                     ))}
                 </div>
             )}
+            <CreateProjectDialog open={open} onOpenChange={setOpen} />
         </div>
     );
 }

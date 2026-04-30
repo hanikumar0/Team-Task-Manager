@@ -31,13 +31,16 @@ import {
     Plus,
     UserPlus
 } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import CreateProjectDialog from '@/components/CreateProjectDialog';
 
 const COLORS = ['#6366f1', '#fbbf24', '#f87171', '#10b981'];
 
 export default function AdminDashboard() {
+    const [open, setOpen] = useState(false);
     const { data: stats, isLoading, isError } = useQuery({
         queryKey: ['admin-stats'],
         queryFn: async () => {
@@ -69,7 +72,7 @@ export default function AdminDashboard() {
                     <Button variant="outline" size="sm">
                         <UserPlus className="mr-2 h-4 w-4" /> Add Member
                     </Button>
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={() => setOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" /> Create Project
                     </Button>
                 </div>
@@ -99,9 +102,9 @@ export default function AdminDashboard() {
                             Team Productivity Trend
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] min-h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={stats?.trend || []}>
+                    <CardContent className="h-[300px] min-h-[300px] w-full overflow-hidden">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                            <BarChart data={stats?.productivity || []}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} />
                                 <YAxis axisLine={false} tickLine={false} />
@@ -116,8 +119,8 @@ export default function AdminDashboard() {
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Task Distribution</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] min-h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <CardContent className="h-[300px] min-h-[300px] w-full overflow-hidden">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <PieChart>
                                 <Pie data={statusData} innerRadius={60} outerRadius={80} dataKey="value">
                                     {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -152,6 +155,7 @@ export default function AdminDashboard() {
                     </div>
                 </CardContent>
             </Card>
+            <CreateProjectDialog open={open} onOpenChange={setOpen} />
         </div>
     );
 }
