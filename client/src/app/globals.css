@@ -100,7 +100,7 @@
   }
   
   .premium-card {
-    @apply glass shadow-premium hover:border-primary/30 hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1;
+    @apply bg-card backdrop-blur-3xl backdrop-saturate-150 border border-white/5 shadow-premium hover:border-primary/30 hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1;
   }
 
   .neon-glow {
