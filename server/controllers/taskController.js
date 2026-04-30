@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const { logActivity } = require('./activityController');
 
 exports.getTasks = async (req, res) => {
     try {
@@ -29,6 +30,10 @@ exports.createTask = async (req, res) => {
             ...req.body,
             createdBy: req.user.id
         });
+
+        // Log Activity
+        await logActivity(req.user.id, 'Created Task', 'Task', task._id, `Created task: ${task.title}`);
+
         res.status(201).json(task);
     } catch (error) {
         res.status(500).json({ message: error.message });

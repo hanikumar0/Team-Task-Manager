@@ -1,4 +1,5 @@
 const Project = require('../models/Project');
+const { logActivity } = require('./activityController');
 
 exports.getProjects = async (req, res) => {
     try {
@@ -45,6 +46,10 @@ exports.createProject = async (req, res) => {
             owner: req.user.id,
             members: members || []
         });
+
+        // Log Activity
+        await logActivity(req.user.id, 'Created Project', 'Project', project._id, `Created project: ${name}`);
+
         res.status(201).json(project);
     } catch (error) {
         res.status(500).json({ message: error.message });
