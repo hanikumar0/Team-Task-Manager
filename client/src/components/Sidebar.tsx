@@ -11,24 +11,40 @@ import {
     BarChart3, 
     Settings, 
     LogOut,
-    Layout
+    Layout,
+    Bell,
+    UserCircle,
+    History
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: FolderKanban, label: 'Projects', href: '/projects' },
-    { icon: CheckSquare, label: 'Tasks', href: '/tasks' },
-    { icon: Users, label: 'Team', href: '/team' },
-    { icon: Calendar, label: 'Calendar', href: '/calendar' },
-    { icon: BarChart3, label: 'Reports', href: '/reports' },
-    { icon: Settings, label: 'Settings', href: '/settings' },
-];
-
 export default function Sidebar() {
     const pathname = usePathname();
-    const logout = useAuthStore((state) => state.logout);
+    const { logout, user } = useAuthStore();
+    const isAdmin = user?.role === 'Admin';
+
+    const adminItems = [
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+        { icon: FolderKanban, label: 'Projects', href: '/projects' },
+        { icon: CheckSquare, label: 'Tasks', href: '/tasks' },
+        { icon: Users, label: 'Team Members', href: '/team' },
+        { icon: BarChart3, label: 'Reports', href: '/reports' },
+        { icon: Calendar, label: 'Calendar', href: '/calendar' },
+        { icon: History, label: 'Activity Logs', href: '/activity' },
+        { icon: Settings, label: 'Settings', href: '/settings' },
+    ];
+
+    const memberItems = [
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+        { icon: FolderKanban, label: 'My Projects', href: '/projects' },
+        { icon: CheckSquare, label: 'My Tasks', href: '/tasks' },
+        { icon: Calendar, label: 'Calendar', href: '/calendar' },
+        { icon: Bell, label: 'Notifications', href: '/notifications' },
+        { icon: UserCircle, label: 'Profile', href: '/settings' },
+    ];
+
+    const menuItems = isAdmin ? adminItems : memberItems;
 
     return (
         <aside className="hidden lg:flex flex-col w-64 bg-white border-r h-screen sticky top-0">
@@ -36,7 +52,7 @@ export default function Sidebar() {
                 <Layout className="h-6 w-6" />
                 TeamTask Pro
             </div>
-            <nav className="flex-1 px-4 space-y-1">
+            <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
                 {menuItems.map((item) => (
                     <Link
                         key={item.href}

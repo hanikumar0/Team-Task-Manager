@@ -15,6 +15,7 @@ import {
     Paperclip,
     Clock
 } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const columns = [
     { id: 'Todo', title: 'To Do', color: 'bg-slate-200' },
@@ -24,6 +25,9 @@ const columns = [
 ];
 
 export default function TasksPage() {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'Admin';
+
     const { data: tasks, isLoading } = useQuery({
         queryKey: ['tasks'],
         queryFn: async () => {
@@ -40,16 +44,18 @@ export default function TasksPage() {
         <div className="h-full flex flex-col space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Tasks</h1>
-                    <p className="text-slate-500">Manage your work across different statuses.</p>
+                    <h1 className="text-3xl font-bold text-slate-900">{isAdmin ? 'Tasks' : 'My Tasks'}</h1>
+                    <p className="text-slate-500">{isAdmin ? 'Manage your work across different statuses.' : 'Track your assigned tasks and update progress.'}</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm">
                         <Filter className="mr-2 h-4 w-4" /> Filter
                     </Button>
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
-                        <Plus className="mr-2 h-4 w-4" /> Add Task
-                    </Button>
+                    {isAdmin && (
+                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                            <Plus className="mr-2 h-4 w-4" /> Add Task
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -64,9 +70,11 @@ export default function TasksPage() {
                                     {getTasksByStatus(column.id).length}
                                 </Badge>
                             </div>
-                            <button className="text-slate-400 hover:text-slate-600">
-                                <Plus size={18} />
-                            </button>
+                            {isAdmin && (
+                                <button className="text-slate-400 hover:text-slate-600">
+                                    <Plus size={18} />
+                                </button>
+                            )}
                         </div>
 
                         <div className="flex-1 flex flex-col gap-3 bg-slate-100/50 p-2 rounded-xl">
@@ -81,9 +89,11 @@ export default function TasksPage() {
                                             }>
                                                 {task.priority}
                                             </Badge>
-                                            <button className="text-slate-400">
-                                                <MoreHorizontal size={16} />
-                                            </button>
+                                            {isAdmin && (
+                                                <button className="text-slate-400">
+                                                    <MoreHorizontal size={16} />
+                                                </button>
+                                            )}
                                         </div>
                                         <h4 className="font-semibold text-slate-900 leading-tight">
                                             {task.title}

@@ -7,9 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Users, Calendar, MoreVertical, ExternalLink } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
 import Link from 'next/link';
 
 export default function ProjectsPage() {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'Admin';
+    
     const { data: projects, isLoading } = useQuery({
         queryKey: ['projects'],
         queryFn: async () => {
@@ -23,7 +27,7 @@ export default function ProjectsPage() {
             <div className="space-y-6">
                 <div className="flex justify-between items-center">
                     <Skeleton className="h-10 w-48" />
-                    <Skeleton className="h-10 w-32" />
+                    {isAdmin && <Skeleton className="h-10 w-32" />}
                 </div>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -38,12 +42,14 @@ export default function ProjectsPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Projects</h1>
-                    <p className="text-slate-500">Manage and track all your active projects.</p>
+                    <h1 className="text-3xl font-bold text-slate-900">{isAdmin ? 'Projects' : 'My Projects'}</h1>
+                    <p className="text-slate-500">{isAdmin ? 'Manage and track all your active projects.' : 'View projects you are currently assigned to.'}</p>
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="mr-2 h-4 w-4" /> New Project
-                </Button>
+                {isAdmin && (
+                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                        <Plus className="mr-2 h-4 w-4" /> New Project
+                    </Button>
+                )}
             </div>
 
             {projects?.length === 0 ? (
@@ -68,9 +74,11 @@ export default function ProjectsPage() {
                                     <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-100 mb-2">
                                         {project.status}
                                     </Badge>
-                                    <button className="text-slate-400 hover:text-slate-600">
-                                        <MoreVertical size={18} />
-                                    </button>
+                                    {isAdmin && (
+                                        <button className="text-slate-400 hover:text-slate-600">
+                                            <MoreVertical size={18} />
+                                        </button>
+                                    )}
                                 </div>
                                 <CardTitle className="text-xl font-bold group-hover:text-indigo-600 transition-colors">
                                     {project.name}

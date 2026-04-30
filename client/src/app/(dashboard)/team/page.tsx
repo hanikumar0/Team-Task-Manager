@@ -15,7 +15,22 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Mail, Shield, UserPlus, MoreHorizontal } from 'lucide-react';
 
+import { useAuthStore } from '@/store/useAuthStore';
+
 export default function TeamPage() {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'Admin';
+
+    if (!isAdmin) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
+                <Shield className="h-16 w-16 text-slate-300" />
+                <h2 className="text-2xl font-bold text-slate-900">Access Denied</h2>
+                <p className="text-slate-500">Only administrators can access the team management page.</p>
+            </div>
+        );
+    }
+
     // Mock data for members
     const members = [
         { id: 1, name: 'Alex Johnson', email: 'alex@example.com', role: 'Admin', status: 'Active', tasks: 12 },
