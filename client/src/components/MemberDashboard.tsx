@@ -25,10 +25,11 @@ import {
     Calendar,
     ArrowRight
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function MemberDashboard() {
     const { data: stats, isLoading, isError } = useQuery({
@@ -151,11 +152,12 @@ export default function MemberDashboard() {
                                             <Badge variant="secondary" className="text-[10px] px-2 py-0 font-bold uppercase">
                                                 {task.priority}
                                             </Badge>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" asChild>
-                                                <Link href={`/tasks`}>
-                                                    <ArrowRight size={16} />
-                                                </Link>
-                                            </Button>
+                                            <Link 
+                                                href={`/tasks`}
+                                                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-primary")}
+                                            >
+                                                <ArrowRight size={16} />
+                                            </Link>
                                         </div>
                                     </div>
                                 ))
