@@ -123,7 +123,7 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent className="p-10 h-[400px]">
                         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                            <BarChart data={stats?.productivity || []}>
+                            <BarChart data={stats?.productivity?.map((p: any) => ({ ...p, day: p.day.toUpperCase() })) || []}>
                                 <defs>
                                     <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="var(--primary)" stopOpacity={1} />
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
                                     dataKey="day" 
                                     axisLine={false} 
                                     tickLine={false} 
-                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}
+                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 800 }}
                                     dy={10}
                                 />
                                 <YAxis 
