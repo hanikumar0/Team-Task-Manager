@@ -1,5 +1,7 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
 import { 
     Card, 
     CardContent, 
@@ -20,26 +22,28 @@ import {
     Clock, 
     AlertCircle, 
     Zap,
-    MessageSquare,
     Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MemberDashboard() {
-    const weeklyProgress = [
-        { day: 'Mon', completed: 3 },
-        { day: 'Tue', completed: 5 },
-        { day: 'Wed', completed: 2 },
-        { day: 'Thu', completed: 8 },
-        { day: 'Fri', completed: 6 },
-    ];
+    const { data: stats, isLoading } = useQuery({
+        queryKey: ['member-stats'],
+        queryFn: async () => {
+            const { data } = await api.get('/dashboard/stats');
+            return data;
+        }
+    });
 
-    const stats = [
-        { label: 'My Tasks', value: '18', icon: CheckCircle2, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-        { label: 'In Progress', value: '5', icon: Zap, color: 'text-yellow-600', bg: 'bg-yellow-100' },
-        { label: 'Due Today', value: '3', icon: Clock, color: 'text-orange-600', bg: 'bg-orange-100' },
-        { label: 'Overdue', value: '1', icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-100' },
+    if (isLoading) return <DashboardSkeleton />;
+
+    const dashboardStats = [
+        { label: 'My Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+        { label: 'In Progress', value: stats?.statusDistribution?.['In Progress'] || 0, icon: Zap, color: 'text-yellow-600', bg: 'bg-yellow-100' },
+        { label: 'Review', value: stats?.statusDistribution?.['Review'] || 0, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-100' },
+        { label: 'Completion', value: `${stats?.summary?.completionRate || 0}%`, icon: AlertCircle, color: 'text-green-600', bg: 'bg-green-100' },
     ];
 
     return (
@@ -56,7 +60,7 @@ export default function MemberDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat, i) => (
+                {dashboardStats.map((stat, i) => (
                     <Card key={i}>
                         <CardContent className="p-6 flex items-center justify-between">
                             <div>
@@ -78,14 +82,14 @@ export default function MemberDashboard() {
                             My Weekly Progress
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[250px]">
+                    <CardContent className="h-[250px] min-h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={weeklyProgress}>
+                            <LineChart data={stats?.trend || []}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} />
                                 <YAxis axisLine={false} tickLine={false} />
                                 <Tooltip />
-                                <Line type="monotone" dataKey="completed" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} />
+                                <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -97,15 +101,11 @@ export default function MemberDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {[
-                                { title: 'Fix CSS Grid Issues', priority: 'Urgent', project: 'Website Redesign' },
-                                { title: 'Implement JWT Auth', priority: 'High', project: 'API Backend' },
-                                { title: 'Review PR #45', priority: 'Medium', project: 'Mobile App' },
-                            ].map((task, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 bg-white border rounded-lg hover:shadow-sm transition-shadow">
+                            {stats?.recentTasks?.map((task: any) => (
+                                <div key={task._id} className="flex items-center justify-between p-3 bg-white border rounded-lg hover:shadow-sm transition-shadow">
                                     <div>
                                         <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                                        <p className="text-[10px] text-slate-500">{task.project}</p>
+                                        <p className="text-[10px] text-slate-500">{task.project?.name}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className={task.priority === 'Urgent' ? 'text-red-600 bg-red-50' : 'text-blue-600 bg-blue-50'}>
@@ -121,28 +121,21 @@ export default function MemberDashboard() {
                     </CardContent>
                 </Card>
             </div>
+        </div>
+    );
+}
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Recent Comments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {[1, 2].map((_, i) => (
-                            <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                                <div className="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0" />
-                                <div>
-                                    <p className="text-sm">
-                                        <span className="font-bold">Admin</span> mentioned you in <span className="text-indigo-600">Task #402</span>
-                                    </p>
-                                    <p className="text-xs text-slate-500 italic mt-1">"Please check the latest designs and update the status."</p>
-                                    <p className="text-[10px] text-slate-400 mt-2">10 minutes ago</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+function DashboardSkeleton() {
+    return (
+        <div className="space-y-6">
+            <Skeleton className="h-10 w-48" />
+            <div className="grid gap-4 md:grid-cols-4">
+                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full" />)}
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
+                <Skeleton className="h-[250px]" />
+                <Skeleton className="h-[250px]" />
+            </div>
         </div>
     );
 }

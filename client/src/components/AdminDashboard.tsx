@@ -1,5 +1,7 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
 import { 
     Card, 
     CardContent, 
@@ -30,30 +32,29 @@ import {
     UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 const COLORS = ['#6366f1', '#fbbf24', '#f87171', '#10b981'];
 
 export default function AdminDashboard() {
-    const statusData = [
-        { name: 'Completed', value: 45 },
-        { name: 'In Progress', value: 30 },
-        { name: 'Todo', value: 15 },
-        { name: 'Review', value: 10 },
-    ];
+    const { data: stats, isLoading } = useQuery({
+        queryKey: ['admin-stats'],
+        queryFn: async () => {
+            const { data } = await api.get('/dashboard/stats');
+            return data;
+        }
+    });
 
-    const weeklyData = [
-        { day: 'Mon', count: 12 },
-        { day: 'Tue', count: 18 },
-        { day: 'Wed', count: 15 },
-        { day: 'Thu', count: 22 },
-        { day: 'Fri', count: 30 },
-    ];
+    if (isLoading) return <DashboardSkeleton />;
 
-    const stats = [
-        { label: 'Active Projects', value: '12', icon: Briefcase, color: 'text-blue-600', bg: 'bg-blue-100' },
-        { label: 'Team Members', value: '24', icon: Users, color: 'text-purple-600', bg: 'bg-purple-100' },
-        { label: 'Total Tasks', value: '128', icon: CheckCircle2, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-        { label: 'Completion Rate', value: '78%', icon: Activity, color: 'text-green-600', bg: 'bg-green-100' },
+    const statusData = Object.entries(stats?.statusDistribution || {}).map(([name, value]) => ({ name, value }));
+
+    const dashboardStats = [
+        { label: 'Active Projects', value: stats?.summary?.activeProjects || 0, icon: Briefcase, color: 'text-blue-600', bg: 'bg-blue-100' },
+        { label: 'Team Members', value: stats?.summary?.totalMembers || 0, icon: Users, color: 'text-purple-600', bg: 'bg-purple-100' },
+        { label: 'Total Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+        { label: 'Completion Rate', value: `${stats?.summary?.completionRate || 0}%`, icon: Activity, color: 'text-green-600', bg: 'bg-green-100' },
     ];
 
     return (
@@ -74,7 +75,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat, i) => (
+                {dashboardStats.map((stat, i) => (
                     <Card key={i}>
                         <CardContent className="p-6 flex items-center justify-between">
                             <div>
@@ -97,9 +98,9 @@ export default function AdminDashboard() {
                             Team Productivity Trend
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[300px] min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={weeklyData}>
+                            <BarChart data={stats?.trend || []}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} />
                                 <YAxis axisLine={false} tickLine={false} />
@@ -114,7 +115,7 @@ export default function AdminDashboard() {
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Task Distribution</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[300px] min-h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie data={statusData} innerRadius={60} outerRadius={80} dataKey="value">
@@ -127,53 +128,43 @@ export default function AdminDashboard() {
                 </Card>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg font-semibold">Team Leaderboard</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {[
-                                { name: 'Alex Johnson', tasks: 24, status: 'Top Performer' },
-                                { name: 'Sarah Miller', tasks: 19, status: 'High Performance' },
-                                { name: 'Michael Chen', tasks: 15, status: 'Consistent' },
-                            ].map((member, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
-                                            {member.name.split(' ').map(n => n[0]).join('')}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold">{member.name}</p>
-                                            <p className="text-[10px] text-slate-500">{member.status}</p>
-                                        </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold">Recent Tasks</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        {stats?.recentTasks?.map((task: any) => (
+                            <div key={task._id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs uppercase">
+                                        {task.assignedTo?.name?.charAt(0) || '?'}
                                     </div>
-                                    <span className="text-sm font-bold text-indigo-600">{member.tasks} tasks</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg font-semibold">Critical Overdue Tasks</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {[1, 2, 3].map((_, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 border-l-4 border-red-500 bg-red-50 rounded-r-lg">
                                     <div>
-                                        <p className="text-sm font-semibold text-slate-900">Homepage Redesign - Bug #{i + 101}</p>
-                                        <p className="text-xs text-red-600">Overdue by {i + 2} days</p>
+                                        <p className="text-sm font-semibold">{task.title}</p>
+                                        <p className="text-[10px] text-slate-500">{task.project?.name}</p>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="text-xs">Remind</Button>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                <Badge variant="outline" className="text-xs">{task.status}</Badge>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+function DashboardSkeleton() {
+    return (
+        <div className="space-y-6">
+            <Skeleton className="h-10 w-48" />
+            <div className="grid gap-4 md:grid-cols-4">
+                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full" />)}
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+                <Skeleton className="md:col-span-2 h-[300px]" />
+                <Skeleton className="h-[300px]" />
             </div>
         </div>
     );

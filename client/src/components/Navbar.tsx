@@ -35,8 +35,8 @@ export default function Navbar() {
                     <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                 </button>
                 <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <button className="flex items-center gap-2 hover:bg-slate-100 p-1 rounded-full pr-3 transition-colors">
+                    <DropdownMenuTrigger className="outline-none">
+                        <div className="flex items-center gap-2 hover:bg-slate-100 p-1 rounded-full pr-3 transition-colors">
                             <Avatar className="h-8 w-8">
                                 <AvatarImage src={user?.avatar} />
                                 <AvatarFallback className="bg-indigo-100 text-indigo-600 font-bold text-xs">
@@ -47,7 +47,7 @@ export default function Navbar() {
                                 <p className="text-xs font-semibold text-slate-900">{user?.name}</p>
                                 <p className="text-[10px] text-slate-500 capitalize">{user?.role}</p>
                             </div>
-                        </button>
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuLabel>My Account</DropdownMenuLabel>

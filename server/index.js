@@ -16,6 +16,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/tasks', require('./routes/tasks'));
+app.use('/api/dashboard', require('./routes/dashboard'));
 
 app.get('/', (req, res) => {
     res.send('Team Task Manager Pro API is running...');
