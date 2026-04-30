@@ -2,9 +2,14 @@
 
 A high-performance, role-based SaaS platform for modern team collaboration and project oversight. Build, track, and deliver projects with precision.
 
+> [!IMPORTANT]
+> **Deployment Note**: While the assignment guidelines specified Railway, this project has been deployed on **Vercel** (Full-Stack). This shift was necessary due to the expiration of the Railway trial period. The application remains fully functional, secure, and performant.
+
+---
+
 ## 🔗 Live Links
-- **Live Application**: [https://synergy-task-manager.railway.app/](https://synergy-task-manager.railway.app/)
-- **Backend API**: [https://synergy-api.railway.app/](https://synergy-api.railway.app/)
+- **Live Application**: [https://synergy-app.vercel.app/](https://synergy-app.vercel.app/)
+- **Backend API**: [https://synergy-api.vercel.app/](https://synergy-api.vercel.app/)
 
 ---
 
@@ -45,7 +50,7 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 - **Framework**: Express.js
 - **Database**: MongoDB (Mongoose ODM)
 - **Authentication**: JSON Web Tokens (JWT) & Bcrypt
-- **Deployment**: Railway
+- **Deployment**: [Full-Stack Vercel Setup](./DEPLOYMENT_GUIDE.md)
 
 ---
 
