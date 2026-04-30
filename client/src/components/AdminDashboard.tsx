@@ -102,8 +102,8 @@ export default function AdminDashboard() {
                             Team Productivity Trend
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] min-h-[300px] w-full overflow-hidden">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <CardContent className="h-[300px] w-full overflow-hidden">
+                        <ResponsiveContainer width="100%" height={300} debounce={50}>
                             <BarChart data={stats?.productivity || []}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} />
@@ -119,8 +119,8 @@ export default function AdminDashboard() {
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold">Task Distribution</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] min-h-[300px] w-full overflow-hidden">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+                    <CardContent className="h-[300px] w-full overflow-hidden">
+                        <ResponsiveContainer width="100%" height={300} debounce={50}>
                             <PieChart>
                                 <Pie data={statusData} innerRadius={60} outerRadius={80} dataKey="value">
                                     {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
