@@ -8,7 +8,7 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 ---
 
 ## 🔗 Live Links
-- **Live Application**: [https://synergy-app.vercel.app/](https://synergy-app.vercel.app/)
+- **Live Application**: [https://team-task-manager-kappa.vercel.app/](https://team-task-manager-kappa.vercel.app/)
 - **Backend API**: [https://synergy-three-tau.vercel.app/](https://synergy-three-tau.vercel.app/)
 
 ---
