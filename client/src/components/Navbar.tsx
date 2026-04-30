@@ -58,13 +58,11 @@ export default function Navbar() {
             
             <div className="flex items-center gap-4">
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative rounded-full">
-                            <Bell className="h-5 w-5 text-slate-500" />
-                            {unreadCount > 0 && (
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
-                            )}
-                        </Button>
+                    <DropdownMenuTrigger className="relative h-9 w-9 rounded-full inline-flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer outline-none">
+                        <Bell className="h-5 w-5 text-slate-500" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
+                        )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-80">
                         <DropdownMenuLabel className="font-semibold text-xs py-3 px-4">Notifications</DropdownMenuLabel>
@@ -92,19 +90,17 @@ export default function Navbar() {
                 <div className="h-6 w-px bg-slate-200" />
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 pl-1 pr-2 rounded-full hover:bg-slate-50">
-                            <Avatar className="h-8 w-8">
-                                <AvatarImage src={user?.avatar} />
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                                    {user?.name?.charAt(0) || 'U'}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="text-left hidden md:block">
-                                <p className="text-xs font-semibold">{user?.name}</p>
-                                <p className="text-[10px] text-muted-foreground leading-none">{user?.role}</p>
-                            </div>
-                        </Button>
+                    <DropdownMenuTrigger className="flex items-center gap-2 pl-1 pr-2 rounded-full hover:bg-slate-50 transition-colors cursor-pointer outline-none">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={user?.avatar} />
+                            <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                                {user?.name?.charAt(0) || 'U'}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="text-left hidden md:block">
+                            <p className="text-xs font-semibold">{user?.name}</p>
+                            <p className="text-[10px] text-muted-foreground leading-none">{user?.role}</p>
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuLabel className="font-semibold text-xs">Account</DropdownMenuLabel>
