@@ -35,6 +35,9 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import CreateProjectDialog from '@/components/CreateProjectDialog';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button';
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
 
@@ -77,9 +80,12 @@ export default function AdminDashboard() {
                     <p className="text-muted-foreground text-sm">Welcome back, here's what's happening today.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Link 
+                        href="/team" 
+                        className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), "flex items-center")}
+                    >
                         <UserPlus className="mr-2 h-4 w-4" /> Add Member
-                    </Button>
+                    </Link>
                     <Button size="sm" onClick={() => setOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" /> Create Project
                     </Button>
@@ -159,8 +165,11 @@ export default function AdminDashboard() {
             </div>
 
             <Card className="shadow-sm">
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+                    <Link href="/tasks" className="text-xs font-medium text-primary hover:underline">
+                        View All
+                    </Link>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="divide-y">
@@ -181,9 +190,12 @@ export default function AdminDashboard() {
                                     <Badge variant="outline" className="text-[10px] uppercase font-bold px-2 py-0">
                                         {task.status}
                                     </Badge>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <Link 
+                                        href="/tasks"
+                                        className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8")}
+                                    >
                                         <ArrowRight className="h-4 w-4" />
-                                    </Button>
+                                    </Link>
                                 </div>
                             </div>
                         ))}
