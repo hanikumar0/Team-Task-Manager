@@ -12,7 +12,6 @@ import {
     Settings, 
     LogOut,
     Layout,
-    Bell,
     UserCircle,
     History
 } from 'lucide-react';
@@ -46,57 +45,54 @@ export default function Sidebar() {
     const menuItems = isAdmin ? adminItems : memberItems;
 
     return (
-        <aside className="hidden lg:flex flex-col w-72 glass border-r h-screen sticky top-0 z-50">
-            <div className="p-8 flex items-center gap-3 px-2">
-                <div className="p-2 bg-primary rounded-xl shadow-lg shadow-primary/20">
-                    <Layout className="h-6 w-6 text-primary-foreground" />
+        <aside className="hidden lg:flex flex-col w-72 glass border-r border-white/5 h-screen sticky top-0 z-50">
+            <div className="p-10 flex items-center gap-4">
+                <div className="p-2.5 bg-primary rounded-[18px] shadow-2xl shadow-primary/40 rotate-3">
+                    <Layout className="h-6 w-6 text-primary-foreground stroke-[2.5]" />
                 </div>
-                <span className="text-xl font-black tracking-tight text-foreground italic">
+                <span className="text-2xl font-black tracking-tighter text-white italic">
                     Synergy
                 </span>
             </div>
             
-            <nav className="flex-1 px-6 space-y-2 overflow-y-auto py-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-4 mb-4">Main Menu</p>
+            <nav className="flex-1 px-8 space-y-3 overflow-y-auto py-6">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 px-4 mb-6">Network</p>
                 {menuItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-200 group",
+                            "flex items-center gap-5 px-5 py-4 rounded-[20px] text-xs font-black uppercase tracking-widest transition-all duration-500 group",
                             pathname === item.href
-                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-                                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                ? "bg-primary text-primary-foreground shadow-2xl shadow-primary/20 neon-glow"
+                                : "text-muted-foreground hover:bg-white/5 hover:text-white"
                         )}
                     >
                         <item.icon className={cn(
-                            "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-                            pathname === item.href ? "text-primary-foreground" : "text-muted-foreground/70"
+                            "h-5 w-5 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
+                            pathname === item.href ? "text-primary-foreground stroke-[2.5]" : "text-muted-foreground/50 stroke-[1.5]"
                         )} />
                         {item.label}
-                        {pathname === item.href && (
-                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary-foreground" />
-                        )}
                     </Link>
                 ))}
             </nav>
 
-            <div className="p-6 mt-auto">
-                <div className="bg-muted/30 rounded-3xl p-5 border border-border/50 mb-6">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+            <div className="p-8 mt-auto">
+                <div className="bg-white/5 rounded-[32px] p-6 border border-white/5 shadow-2xl">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary font-black border border-primary/20">
                             {user?.name?.charAt(0) || 'U'}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-sm font-bold truncate text-foreground">{user?.name}</p>
-                            <p className="text-[10px] font-medium text-muted-foreground uppercase">{user?.role}</p>
+                            <p className="text-sm font-black truncate text-white leading-tight">{user?.name}</p>
+                            <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1 italic">{user?.role}</p>
                         </div>
                     </div>
                     <button
                         onClick={() => logout()}
-                        className="flex items-center justify-center gap-2 px-4 py-2.5 w-full rounded-xl text-xs font-black text-destructive hover:bg-destructive/10 transition-all border border-destructive/20"
+                        className="flex items-center justify-center gap-3 px-6 py-4 w-full rounded-2xl text-[10px] font-black uppercase tracking-widest text-destructive hover:bg-destructive/10 transition-all border border-destructive/20 shadow-inner"
                     >
-                        <LogOut className="h-4 w-4" />
+                        <LogOut className="h-4 w-4 stroke-[2.5]" />
                         Sign Out
                     </button>
                 </div>
@@ -104,4 +100,3 @@ export default function Sidebar() {
         </aside>
     );
 }
-
