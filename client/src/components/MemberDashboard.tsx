@@ -66,16 +66,18 @@ export default function MemberDashboard() {
                     <p className="text-sm text-muted-foreground">Welcome back! Focus on your high-priority tasks today.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm" asChild>
-                        <Link href="/calendar">
-                            <Calendar className="mr-2 h-4 w-4" /> View My Calendar
-                        </Link>
-                    </Button>
-                    <Button size="sm" asChild>
-                        <Link href="/tasks">
-                            <CheckCircle2 className="mr-2 h-4 w-4" /> Update Task Status
-                        </Link>
-                    </Button>
+                    <Link 
+                        href="/calendar" 
+                        className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), "flex items-center")}
+                    >
+                        <Calendar className="mr-2 h-4 w-4" /> View My Calendar
+                    </Link>
+                    <Link 
+                        href="/tasks" 
+                        className={cn(buttonVariants({ variant: 'default', size: 'sm' }), "flex items-center")}
+                    >
+                        <CheckCircle2 className="mr-2 h-4 w-4" /> Update Task Status
+                    </Link>
                 </div>
             </div>
 
