@@ -1,6 +1,8 @@
 'use client';
 
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, Menu, X, Layout } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
@@ -16,10 +18,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuthStore } from '@/store/useAuthStore';
 import { formatDistanceToNow } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const { data: notifications } = useQuery({
         queryKey: ['notifications-nav'],
@@ -33,87 +38,151 @@ export default function Navbar() {
     const unreadCount = notifications?.filter((n: any) => !n.read).length || 0;
 
     return (
-        <header className="h-16 bg-white border-b flex items-center justify-between px-6 sticky top-0 z-40">
-            <div className="flex items-center flex-1 max-w-md">
-                <div className="relative w-full">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+        <>
+        <header className="h-20 glass border-b flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 transition-all duration-300">
+            <div className="flex items-center gap-4 flex-1 max-w-lg">
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="lg:hidden rounded-xl text-muted-foreground"
+                    onClick={() => setIsMobileMenuOpen(true)}
+                >
+                    <Menu className="h-6 w-6" />
+                </Button>
+                <div className="relative w-full group hidden sm:block">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                         type="search"
-                        placeholder="Search projects, tasks..."
-                        className="pl-9 bg-slate-50 border-none"
+                        placeholder="Quick search projects or tasks..."
+                        className="pl-12 bg-muted/30 border-none rounded-2xl h-12 text-sm font-medium focus-visible:ring-primary/20 transition-all hover:bg-muted/50"
                     />
                 </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
                 <DropdownMenu>
                     <DropdownMenuTrigger className="outline-none">
-                        <div className="p-2 text-slate-500 hover:bg-slate-100 rounded-full relative cursor-pointer">
+                        <div className="p-3 text-muted-foreground hover:bg-muted/50 hover:text-primary rounded-2xl relative cursor-pointer transition-all active:scale-95 shadow-sm border border-transparent hover:border-border/50">
                             <Bell className="h-5 w-5" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                                <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-background animate-in fade-in zoom-in duration-300"></span>
                             )}
                         </div>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80 p-0">
-                        <div className="p-4 border-b flex justify-between items-center">
-                            <h3 className="font-semibold text-sm">Notifications</h3>
-                            {unreadCount > 0 && <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">{unreadCount} New</span>}
+                    <DropdownMenuContent align="end" className="w-96 p-0 premium-card border-none mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                        <div className="p-6 border-b border-border/50 flex justify-between items-center bg-muted/20">
+                            <h3 className="font-black text-sm uppercase tracking-widest text-foreground">Notifications</h3>
+                            {unreadCount > 0 && (
+                                <Badge className="bg-primary text-primary-foreground font-black text-[10px] rounded-lg">
+                                    {unreadCount} NEW
+                                </Badge>
+                            )}
                         </div>
-                        <div className="max-h-[300px] overflow-y-auto">
+                        <div className="max-h-[400px] overflow-y-auto divide-y divide-border/50">
                             {notifications?.length > 0 ? (
                                 notifications.slice(0, 5).map((notification: any) => (
-                                    <DropdownMenuItem key={notification._id} className="p-4 flex flex-col items-start gap-1 border-b last:border-0 cursor-pointer hover:bg-slate-50 focus:bg-slate-50">
+                                    <DropdownMenuItem key={notification._id} className="p-6 flex flex-col items-start gap-2 cursor-pointer hover:bg-muted/30 focus:bg-muted/30 transition-colors">
                                         <div className="flex justify-between w-full">
-                                            <span className={`font-semibold text-xs ${notification.read ? 'text-slate-500' : 'text-indigo-600'}`}>
+                                            <span className={cn(
+                                                "font-black text-xs",
+                                                notification.read ? 'text-muted-foreground' : 'text-primary'
+                                            )}>
                                                 {notification.title}
                                             </span>
-                                            <span className="text-[10px] text-slate-400">
+                                            <span className="text-[10px] font-bold text-muted-foreground/60">
                                                 {formatDistanceToNow(new Date(notification.createdAt))} ago
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-600 line-clamp-2">{notification.message}</p>
+                                        <p className="text-xs text-muted-foreground font-medium leading-relaxed line-clamp-2 italic">
+                                            "{notification.message}"
+                                        </p>
                                     </DropdownMenuItem>
                                 ))
                             ) : (
-                                <div className="p-8 text-center text-slate-400 text-xs">
-                                    No notifications yet.
+                                <div className="p-12 text-center text-muted-foreground text-xs font-medium italic">
+                                    Your inbox is clear for today.
                                 </div>
                             )}
                         </div>
-                        <div className="p-2 border-t text-center">
-                            <Link href="/notifications" className="text-xs font-semibold text-indigo-600 hover:underline py-1 block w-full">
-                                View All Notifications
+                        <div className="p-4 bg-muted/20 text-center">
+                            <Link href="/notifications" className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity">
+                                View Intelligence Feed
                             </Link>
                         </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <div className="h-8 w-px bg-border/50" />
+
                 <DropdownMenu>
                     <DropdownMenuTrigger className="outline-none">
-                        <div className="flex items-center gap-2 hover:bg-slate-100 p-1 rounded-full pr-3 transition-colors">
-                            <Avatar className="h-8 w-8">
+                        <div className="flex items-center gap-3 hover:bg-muted/50 p-2 rounded-2xl pr-4 transition-all cursor-pointer border border-transparent hover:border-border/50 group active:scale-95">
+                            <Avatar className="h-10 w-10 border-2 border-primary/20 shadow-md group-hover:scale-105 transition-transform duration-300">
                                 <AvatarImage src={user?.avatar} />
-                                <AvatarFallback className="bg-indigo-100 text-indigo-600 font-bold text-xs">
+                                <AvatarFallback className="bg-primary/10 text-primary font-black text-sm">
                                     {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="text-left hidden sm:block">
-                                <p className="text-xs font-semibold text-slate-900">{user?.name}</p>
-                                <p className="text-[10px] text-slate-500 capitalize">{user?.role}</p>
+                            <div className="text-left hidden md:block">
+                                <p className="text-xs font-black text-foreground tracking-tight">{user?.name}</p>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
+                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">
+                                        {user?.role}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600" onClick={() => logout()}>
-                            Logout
+                    <DropdownMenuContent align="end" className="w-64 premium-card border-none mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                        <DropdownMenuLabel className="p-6 pb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                            My Account
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator className="bg-border/50 mx-4" />
+                        <DropdownMenuItem className="p-4 cursor-pointer font-bold rounded-xl mx-2">Profile Details</DropdownMenuItem>
+                        <DropdownMenuItem className="p-4 cursor-pointer font-bold rounded-xl mx-2">System Settings</DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-border/50 mx-4" />
+                        <DropdownMenuItem className="p-4 text-destructive font-black cursor-pointer rounded-xl mx-2 hover:bg-destructive/10" onClick={() => logout()}>
+                            End Session
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
         </header>
+
+        {/* Mobile Sidebar Overlay */}
+        {isMobileMenuOpen && (
+            <div className="fixed inset-0 z-[100] lg:hidden">
+                <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                <div className="absolute inset-y-0 left-0 w-72 bg-slate-950 shadow-2xl border-r border-white/5 animate-in slide-in-from-left duration-300">
+                    <div className="p-8 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-600/20">
+                                <Layout className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="text-xl font-black tracking-tight text-white italic">Synergy</span>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-400">
+                            <X className="h-5 w-5" />
+                        </Button>
+                    </div>
+                    {/* Reuse Sidebar Content Logic */}
+                    <div className="px-6 py-4">
+                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-4 mb-4">Main Menu</p>
+                         <nav className="space-y-2">
+                            {/* Simplified for now, or import shared items */}
+                            <Link href="/dashboard" className="flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/10">
+                                <Layout className="h-5 w-5" /> Dashboard
+                            </Link>
+                            <Link href="/projects" className="flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-bold text-slate-400 hover:text-white transition-colors">
+                                <Search className="h-5 w-5" /> Projects
+                            </Link>
+                            {/* ... more links ... */}
+                         </nav>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }
+

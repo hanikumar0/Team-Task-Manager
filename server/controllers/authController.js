@@ -73,7 +73,7 @@ exports.getMe = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find({}).select('-password');
+        const users = await User.find({ _id: { $ne: req.user.id } }).select('-password');
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: error.message });

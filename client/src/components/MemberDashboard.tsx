@@ -38,82 +38,118 @@ export default function MemberDashboard() {
     });
 
     if (isLoading) return <DashboardSkeleton />;
-    if (isError) return <div className="p-8 text-center bg-red-50 text-red-600 rounded-xl border border-red-100">Failed to load dashboard data. Please check your database connection.</div>;
+    if (isError) return (
+        <div className="p-12 text-center glass rounded-3xl border border-destructive/20 animate-in-fade">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-foreground mb-2">Sync Interrupted</h2>
+            <p className="text-muted-foreground max-w-md mx-auto">
+                We're having trouble loading your latest task updates. Please check your connection.
+            </p>
+        </div>
+    );
 
     const dashboardStats = [
-        { label: 'My Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-        { label: 'In Progress', value: stats?.statusDistribution?.['In Progress'] || 0, icon: Zap, color: 'text-yellow-600', bg: 'bg-yellow-100' },
-        { label: 'Review', value: stats?.statusDistribution?.['Review'] || 0, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-100' },
-        { label: 'Completion', value: `${stats?.summary?.completionRate || 0}%`, icon: AlertCircle, color: 'text-green-600', bg: 'bg-green-100' },
+        { label: 'My Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-primary' },
+        { label: 'In Progress', value: stats?.statusDistribution?.['In Progress'] || 0, icon: Zap, color: 'text-amber-500' },
+        { label: 'Overdue', value: stats?.summary?.overdueTasks || 0, icon: AlertCircle, color: 'text-destructive' },
+        { label: 'Completion', value: `${stats?.summary?.completionRate || 0}%`, icon: Zap, color: 'text-emerald-500' },
     ];
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Welcome Back!</h1>
-                    <p className="text-slate-500">Focus on your tasks and crush your goals today.</p>
+        <div className="space-y-8 animate-in-fade">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="space-y-1">
+                    <h1 className="text-4xl font-black tracking-tight gradient-text">Welcome Back!</h1>
+                    <p className="text-muted-foreground text-lg italic">Your productivity mission for today starts here.</p>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" size="sm">View Calendar</Button>
-                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">Update Status</Button>
+                <div className="flex gap-3">
+                    <Button variant="secondary" size="lg" className="rounded-2xl font-semibold">
+                        View My Calendar
+                    </Button>
+                    <Button size="lg" className="bg-primary hover:brightness-110 text-primary-foreground rounded-2xl font-semibold shadow-lg shadow-primary/20">
+                        Update Task Status
+                    </Button>
                 </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {dashboardStats.map((stat, i) => (
-                    <Card key={i}>
-                        <CardContent className="p-6 flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                                <h3 className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</h3>
+                    <Card key={i} className="premium-card group border-none">
+                        <CardContent className="p-8 flex items-center justify-between">
+                            <div className="space-y-1">
+                                <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/70">{stat.label}</p>
+                                <h3 className="text-4xl font-black text-foreground">{stat.value}</h3>
                             </div>
-                            <div className={`p-3 rounded-xl ${stat.bg}`}>
-                                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                            <div className={`p-4 rounded-2xl bg-muted/50 group-hover:scale-110 transition-transform duration-300`}>
+                                <stat.icon className={`h-7 w-7 ${stat.color}`} />
                             </div>
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            My Weekly Progress
-                        </CardTitle>
+            <div className="grid gap-8 md:grid-cols-2">
+                <Card className="premium-card border-none overflow-hidden">
+                    <CardHeader className="border-b border-border/50 bg-muted/20">
+                        <CardTitle className="text-xl font-bold">My Weekly Velocity</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[250px] w-full overflow-hidden">
-                        <ResponsiveContainer width="100%" height={250} debounce={50}>
+                    <CardContent className="p-8 h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                             <LineChart data={stats?.productivity || []}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="day" axisLine={false} tickLine={false} />
-                                <YAxis axisLine={false} tickLine={false} />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1' }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                                <XAxis 
+                                    dataKey="day" 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12, fontWeight: 600 }}
+                                />
+                                <YAxis 
+                                    axisLine={false} 
+                                    tickLine={false}
+                                    tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
+                                />
+                                <Tooltip 
+                                    contentStyle={{ 
+                                        backgroundColor: 'var(--card)', 
+                                        borderRadius: '16px', 
+                                        border: '1px solid var(--border)',
+                                        boxShadow: 'var(--shadow-premium)'
+                                    }}
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="count" 
+                                    stroke="var(--primary)" 
+                                    strokeWidth={4} 
+                                    dot={{ r: 6, fill: 'var(--primary)', strokeWidth: 2, stroke: 'var(--card)' }}
+                                    activeDot={{ r: 8, strokeWidth: 0 }}
+                                />
                             </LineChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg font-semibold">Priority Tasks</CardTitle>
+                <Card className="premium-card border-none overflow-hidden">
+                    <CardHeader className="border-b border-border/50 bg-muted/20">
+                        <CardTitle className="text-xl font-bold">Priority Focus</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
+                    <CardContent className="p-0">
+                        <div className="divide-y divide-border/50">
                             {stats?.recentTasks?.map((task: any) => (
-                                <div key={task._id} className="flex items-center justify-between p-3 bg-white border rounded-lg hover:shadow-sm transition-shadow">
-                                    <div>
-                                        <p className="text-sm font-semibold text-slate-900">{task.title}</p>
-                                        <p className="text-[10px] text-slate-500">{task.projectId?.name}</p>
+                                <div key={task._id} className="flex items-center justify-between p-5 hover:bg-muted/30 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-3 h-3 rounded-full ${task.priority === 'Urgent' ? 'bg-destructive animate-pulse' : 'bg-primary'}`} />
+                                        <div>
+                                            <p className="font-bold text-foreground">{task.title}</p>
+                                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-tight">{task.projectId?.name}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant="outline" className={task.priority === 'Urgent' ? 'text-red-600 bg-red-50' : 'text-blue-600 bg-blue-50'}>
+                                    <div className="flex items-center gap-3">
+                                        <Badge variant="secondary" className="rounded-lg px-3 py-1 font-bold text-[10px] uppercase">
                                             {task.priority}
                                         </Badge>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600">
-                                            <Play size={16} />
+                                        <Button variant="ghost" size="icon" className="rounded-xl text-primary hover:bg-primary/10">
+                                            <Play size={18} fill="currentColor" />
                                         </Button>
                                     </div>
                                 </div>
@@ -128,15 +164,25 @@ export default function MemberDashboard() {
 
 function DashboardSkeleton() {
     return (
-        <div className="space-y-6">
-            <Skeleton className="h-10 w-48" />
-            <div className="grid gap-4 md:grid-cols-4">
-                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full" />)}
+        <div className="space-y-8 animate-in-fade">
+            <div className="flex justify-between items-end">
+                <div className="space-y-2">
+                    <Skeleton className="h-10 w-64 rounded-xl" />
+                    <Skeleton className="h-6 w-48 rounded-lg" />
+                </div>
+                <div className="flex gap-3">
+                    <Skeleton className="h-12 w-40 rounded-2xl" />
+                    <Skeleton className="h-12 w-40 rounded-2xl" />
+                </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-                <Skeleton className="h-[250px]" />
-                <Skeleton className="h-[250px]" />
+            <div className="grid gap-6 md:grid-cols-4">
+                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)}
+            </div>
+            <div className="grid gap-8 md:grid-cols-2">
+                <Skeleton className="h-[380px] rounded-3xl" />
+                <Skeleton className="h-[380px] rounded-3xl" />
             </div>
         </div>
     );
 }
+

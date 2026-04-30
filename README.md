@@ -1,10 +1,10 @@
-# Team Task Manager Pro 🚀
+# Synergy 🚀
 
 A high-performance, role-based SaaS platform for modern team collaboration and project oversight. Build, track, and deliver projects with precision.
 
 ## 🔗 Live Links
-- **Live Application**: [https://team-task-manager-pro.vercel.app/](https://team-task-manager-pro.vercel.app/)
-- **Backend API**: [https://team-task-manager-pro.onrender.com/](https://team-task-manager-pro.onrender.com/)
+- **Live Application**: [https://synergy-task-manager.railway.app/](https://synergy-task-manager.railway.app/)
+- **Backend API**: [https://synergy-api.railway.app/](https://synergy-api.railway.app/)
 
 ---
 
@@ -15,9 +15,9 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 - **Member Dashboard**: Focused workspace for assigned tasks, deadlines, and personal progress tracking.
 
 ### 📊 Advanced Analytics & Visualization
-- **Interactive Charts**: Real-time visualization of task statuses and team productivity using Recharts.
-- **Kanban Board**: Drag-and-drop-ready task management with status categorization (Todo, In Progress, Review, Completed).
-- **Interactive Calendar**: Visualize deadlines and project timelines at a glance.
+- **Overdue Task Tracking**: Real-time identification of critical deadlines and overdue missions.
+- **Interactive Charts**: Visual breakdown of task statuses and team productivity using Recharts.
+- **Project Distribution**: Analysis of project volume and team member density.
 
 ### 👥 Team & Project Management
 - **Project Oversight**: Create projects, assign team members, and set priority levels.
@@ -25,8 +25,8 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 - **Secure Deletion**: Admins can remove members safely, with built-in protections for administrative accounts.
 
 ### 🔔 Real-Time Awareness
-- **Notification System**: Instant alerts for task assignments and project updates with a dedicated history view.
-- **Activity Logs**: Complete audit trail of system-wide actions for transparency and accountability.
+- **Notification System**: Instant alerts for task assignments and project updates.
+- **Activity Logs**: Complete audit trail of system-wide actions for transparency.
 
 ---
 
@@ -34,10 +34,10 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 
 ### Frontend
 - **Framework**: Next.js 15+ (App Router)
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS (v4) with OKLCH color tokens
 - **State Management**: Zustand
 - **Data Fetching**: TanStack Query (React Query)
-- **UI Components**: Base UI + custom ShadCN-inspired design
+- **UI Components**: custom premium design with Lucide icons
 - **Charts**: Recharts
 
 ### Backend
@@ -45,7 +45,7 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 - **Framework**: Express.js
 - **Database**: MongoDB (Mongoose ODM)
 - **Authentication**: JSON Web Tokens (JWT) & Bcrypt
-- **Deployment**: Render
+- **Deployment**: Railway
 
 ---
 
@@ -53,7 +53,7 @@ A high-performance, role-based SaaS platform for modern team collaboration and p
 
 ### Prerequisites
 - Node.js (v18+)
-- MongoDB connection string
+- MongoDB connection string (Atlas)
 
 ### Installation
 1. Clone the repository:

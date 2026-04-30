@@ -69,7 +69,7 @@ export default function TeamPage() {
                 </Button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
                 <Table>
                     <TableHeader className="bg-slate-50">
                         <TableRow>
@@ -92,7 +92,7 @@ export default function TeamPage() {
                                 </TableRow>
                             ))
                         ) : (
-                            members?.map((member: any) => (
+                            members?.filter((m: any) => m._id !== user?._id).map((member: any) => (
                                 <TableRow key={member._id} className="hover:bg-slate-50 transition-colors">
                                     <TableCell>
                                         <div className="flex items-center gap-3">

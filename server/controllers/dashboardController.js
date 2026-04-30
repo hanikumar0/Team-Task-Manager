@@ -17,6 +17,7 @@ exports.getDashboardStats = async (req, res) => {
             totalProjects,
             activeProjects,
             totalTasks,
+            overdueTasks,
             taskStatusDist,
             totalMembers,
             recentTasks
@@ -24,6 +25,11 @@ exports.getDashboardStats = async (req, res) => {
             Project.countDocuments(projectQuery),
             Project.countDocuments({ ...projectQuery, status: 'Active' }),
             Task.countDocuments(taskQuery),
+            Task.countDocuments({ 
+                ...taskQuery, 
+                dueDate: { $lt: new Date() },
+                status: { $ne: 'Completed' }
+            }),
             Task.aggregate([
                 { $match: taskQuery },
                 { $group: { _id: '$status', count: { $sum: 1 } } }
@@ -54,6 +60,7 @@ exports.getDashboardStats = async (req, res) => {
                 totalProjects,
                 activeProjects,
                 totalTasks,
+                overdueTasks,
                 totalMembers: isAdmin ? totalMembers : undefined,
                 completionRate: totalTasks > 0 
                     ? Math.round((statusDistribution['Completed'] / totalTasks) * 100) 
@@ -61,14 +68,8 @@ exports.getDashboardStats = async (req, res) => {
             },
             statusDistribution,
             recentTasks,
-            // Mock trend for now as real trend needs date parsing
-            trend: [
-                { day: 'Mon', count: 5 },
-                { day: 'Tue', count: 8 },
-                { day: 'Wed', count: 3 },
-                { day: 'Thu', count: 12 },
-                { day: 'Fri', count: 7 }
-            ]
+            // Productivity trend (Currently empty until real history tracking is implemented)
+            productivity: []
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
