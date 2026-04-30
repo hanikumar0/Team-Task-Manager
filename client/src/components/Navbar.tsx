@@ -2,6 +2,7 @@
 
 import { Bell, Search, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 import { 
     DropdownMenu, 
     DropdownMenuContent, 
@@ -30,10 +31,35 @@ export default function Navbar() {
                 </div>
             </div>
             <div className="flex items-center gap-4">
-                <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full relative">
-                    <Bell className="h-5 w-5" />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="outline-none">
+                        <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full relative">
+                            <Bell className="h-5 w-5" />
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-80 p-0">
+                        <div className="p-4 border-b">
+                            <h3 className="font-semibold text-sm">Notifications</h3>
+                        </div>
+                        <div className="max-h-[300px] overflow-y-auto">
+                            {[1, 2, 3].map((_, i) => (
+                                <DropdownMenuItem key={i} className="p-4 flex flex-col items-start gap-1 border-b last:border-0 cursor-pointer hover:bg-slate-50 focus:bg-slate-50">
+                                    <div className="flex justify-between w-full">
+                                        <span className="font-semibold text-xs text-indigo-600">New Task Assigned</span>
+                                        <span className="text-[10px] text-slate-400">2h ago</span>
+                                    </div>
+                                    <p className="text-xs text-slate-600 line-clamp-2">You have been assigned to the "Fix Dashboard Layout" task.</p>
+                                </DropdownMenuItem>
+                            ))}
+                        </div>
+                        <div className="p-2 border-t text-center">
+                            <Link href="/notifications" className="text-xs font-semibold text-indigo-600 hover:underline py-1 block w-full">
+                                View All Notifications
+                            </Link>
+                        </div>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <DropdownMenu>
                     <DropdownMenuTrigger className="outline-none">
                         <div className="flex items-center gap-2 hover:bg-slate-100 p-1 rounded-full pr-3 transition-colors">

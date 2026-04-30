@@ -40,7 +40,6 @@ export default function Sidebar() {
         { icon: FolderKanban, label: 'My Projects', href: '/projects' },
         { icon: CheckSquare, label: 'My Tasks', href: '/tasks' },
         { icon: Calendar, label: 'Calendar', href: '/calendar' },
-        { icon: Bell, label: 'Notifications', href: '/notifications' },
         { icon: UserCircle, label: 'Profile', href: '/settings' },
     ];
 
