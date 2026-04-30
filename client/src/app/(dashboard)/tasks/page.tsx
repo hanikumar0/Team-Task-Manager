@@ -16,6 +16,7 @@ import {
     Clock
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import CreateTaskDialog from '@/components/CreateTaskDialog';
 
 const columns = [
     { id: 'Todo', title: 'To Do', color: 'bg-slate-200' },
@@ -25,6 +26,8 @@ const columns = [
 ];
 
 export default function TasksPage() {
+    const [open, setOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState('Todo');
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'Admin';
 
@@ -52,7 +55,7 @@ export default function TasksPage() {
                         <Filter className="mr-2 h-4 w-4" /> Filter
                     </Button>
                     {isAdmin && (
-                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" onClick={() => { setSelectedStatus('Todo'); setOpen(true); }}>
                             <Plus className="mr-2 h-4 w-4" /> Add Task
                         </Button>
                     )}
@@ -71,7 +74,10 @@ export default function TasksPage() {
                                 </Badge>
                             </div>
                             {isAdmin && (
-                                <button className="text-slate-400 hover:text-slate-600">
+                                <button 
+                                    className="text-slate-400 hover:text-slate-600"
+                                    onClick={() => { setSelectedStatus(column.id); setOpen(true); }}
+                                >
                                     <Plus size={18} />
                                 </button>
                             )}
@@ -131,6 +137,7 @@ export default function TasksPage() {
                     </div>
                 ))}
             </div>
+            <CreateTaskDialog open={open} onOpenChange={setOpen} initialStatus={selectedStatus} />
         </div>
     );
 }

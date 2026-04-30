@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { 
@@ -16,8 +17,10 @@ import { Badge } from '@/components/ui/badge';
 import { Mail, Shield, UserPlus, MoreHorizontal, Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Skeleton } from '@/components/ui/skeleton';
+import InviteMemberDialog from '@/components/InviteMemberDialog';
 
 export default function TeamPage() {
+    const [open, setOpen] = useState(false);
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'Admin';
 
@@ -47,7 +50,7 @@ export default function TeamPage() {
                     <h1 className="text-3xl font-bold text-slate-900">Team Members</h1>
                     <p className="text-slate-500">Manage your team and their roles.</p>
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
+                <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={() => setOpen(true)}>
                     <UserPlus className="mr-2 h-4 w-4" /> Invite Member
                 </Button>
             </div>
@@ -118,6 +121,7 @@ export default function TeamPage() {
                     </TableBody>
                 </Table>
             </div>
+            <InviteMemberDialog open={open} onOpenChange={setOpen} />
         </div>
     );
 }
