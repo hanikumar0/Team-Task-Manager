@@ -1,10 +1,9 @@
 'use client';
 
-import { Bell, Search, Menu, X, Layout, Zap } from 'lucide-react';
+import { Bell, Search, Menu, X, Layout } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { 
@@ -19,7 +18,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuthStore } from '@/store/useAuthStore';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user);
@@ -32,166 +30,113 @@ export default function Navbar() {
             const { data } = await api.get('/notifications');
             return data;
         },
-        refetchInterval: 30000 // Refetch every 30s
+        refetchInterval: 30000
     });
 
     const unreadCount = notifications?.filter((n: any) => !n.read).length || 0;
 
     return (
-        <>
-        <header className="h-24 glass border-b border-white/5 flex items-center justify-between px-6 lg:px-12 sticky top-0 z-40 transition-all duration-300">
-            <div className="flex items-center gap-6 flex-1 max-w-xl">
+        <header className="h-16 bg-white border-b flex items-center justify-between px-4 lg:px-6 sticky top-0 z-40">
+            <div className="flex items-center gap-4 flex-1 max-w-md">
                 <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="lg:hidden rounded-2xl bg-white/5 border border-white/10 text-white"
+                    className="lg:hidden"
                     onClick={() => setIsMobileMenuOpen(true)}
                 >
-                    <Menu className="h-6 w-6" />
+                    <Menu className="h-5 w-5" />
                 </Button>
-                <div className="relative w-full group hidden sm:block">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-all duration-300" />
+                <div className="relative w-full hidden sm:block">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         type="search"
-                        placeholder="Scan projects or identify mission tasks..."
-                        className="pl-14 bg-white/[0.03] border border-white/5 rounded-2xl h-14 text-xs font-black uppercase tracking-widest text-white focus-visible:ring-primary/20 focus-visible:bg-white/[0.06] transition-all hover:bg-white/[0.05]"
+                        placeholder="Search tasks..."
+                        className="pl-9 bg-slate-50 border-none h-9 text-sm rounded-lg"
                     />
                 </div>
             </div>
-            <div className="flex items-center gap-8">
+            
+            <div className="flex items-center gap-4">
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="outline-none">
-                        <div className="p-4 text-muted-foreground hover:bg-white/5 hover:text-primary rounded-2xl relative cursor-pointer transition-all active:scale-95 border border-white/5 hover:border-primary/20 group">
-                            <Bell className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="relative rounded-full">
+                            <Bell className="h-5 w-5 text-slate-500" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-3.5 right-3.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-background animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                                <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
                             )}
-                        </div>
+                        </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[400px] p-0 glass border-white/10 mt-6 animate-in fade-in slide-in-from-top-6 duration-500 shadow-2xl">
-                        <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-                            <h3 className="font-black text-xs uppercase tracking-[0.2em] text-white italic">Intelligence Feed</h3>
-                            {unreadCount > 0 && (
-                                <Badge className="bg-primary text-primary-foreground font-black text-[9px] rounded-lg px-3 py-1 tracking-widest">
-                                    {unreadCount} SIGNAL
-                                </Badge>
-                            )}
-                        </div>
-                        <div className="max-h-[450px] overflow-y-auto divide-y divide-white/5">
+                    <DropdownMenuContent align="end" className="w-80">
+                        <DropdownMenuLabel className="font-semibold text-xs py-3 px-4">Notifications</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <div className="max-h-80 overflow-y-auto">
                             {notifications?.length > 0 ? (
-                                notifications.slice(0, 5).map((notification: any) => (
-                                    <DropdownMenuItem key={notification._id} className="p-8 flex flex-col items-start gap-3 cursor-pointer hover:bg-white/5 focus:bg-white/5 transition-all">
-                                        <div className="flex justify-between w-full">
-                                            <span className={cn(
-                                                "font-black text-xs uppercase tracking-tight",
-                                                notification.read ? 'text-muted-foreground' : 'text-primary'
-                                            )}>
-                                                {notification.title}
-                                            </span>
-                                            <span className="text-[10px] font-black text-muted-foreground/40 italic">
-                                                {formatDistanceToNow(new Date(notification.createdAt))} ago
+                                notifications.slice(0, 5).map((n: any) => (
+                                    <DropdownMenuItem key={n._id} className="p-4 flex flex-col items-start gap-1">
+                                        <div className="flex justify-between w-full font-semibold text-xs">
+                                            <span>{n.title}</span>
+                                            <span className="text-[10px] text-muted-foreground font-normal">
+                                                {formatDistanceToNow(new Date(n.createdAt))} ago
                                             </span>
                                         </div>
-                                        <p className="text-xs text-muted-foreground font-medium leading-relaxed italic opacity-80">
-                                            "{notification.message}"
-                                        </p>
+                                        <p className="text-xs text-muted-foreground line-clamp-1">{n.message}</p>
                                     </DropdownMenuItem>
                                 ))
                             ) : (
-                                <div className="p-16 text-center text-muted-foreground text-[10px] font-black uppercase tracking-[0.3em] italic opacity-30">
-                                    Zero Activity Detected
-                                </div>
+                                <div className="p-8 text-center text-xs text-muted-foreground">No new notifications</div>
                             )}
-                        </div>
-                        <div className="p-6 bg-white/[0.02] text-center border-t border-white/5">
-                            <Link href="/notifications" className="text-[10px] font-black uppercase tracking-[0.3em] text-primary hover:text-white transition-all">
-                                Full History Trace
-                            </Link>
                         </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="h-10 w-px bg-white/5" />
+                <div className="h-6 w-px bg-slate-200" />
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="outline-none">
-                        <div className="flex items-center gap-4 hover:bg-white/5 p-2 rounded-[22px] pr-6 transition-all cursor-pointer border border-white/5 hover:border-primary/20 group active:scale-95">
-                            <div className="relative">
-                                <Avatar className="h-12 w-12 border-2 border-white/10 shadow-2xl group-hover:scale-105 group-hover:border-primary/40 transition-all duration-500">
-                                    <AvatarImage src={user?.avatar} />
-                                    <AvatarFallback className="bg-primary/10 text-primary font-black text-xs">
-                                        {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary border-2 border-background flex items-center justify-center">
-                                    <Zap className="h-2 w-2 text-primary-foreground stroke-[3]" />
-                                </div>
-                            </div>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="flex items-center gap-2 pl-1 pr-2 rounded-full hover:bg-slate-50">
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={user?.avatar} />
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                                    {user?.name?.charAt(0) || 'U'}
+                                </AvatarFallback>
+                            </Avatar>
                             <div className="text-left hidden md:block">
-                                <p className="text-sm font-black text-white tracking-tighter italic">{user?.name}</p>
-                                <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] opacity-80 mt-0.5">
-                                    {user?.role} Level
-                                </p>
+                                <p className="text-xs font-semibold">{user?.name}</p>
+                                <p className="text-[10px] text-muted-foreground leading-none">{user?.role}</p>
                             </div>
-                        </div>
+                        </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-72 glass border-white/10 mt-6 animate-in fade-in slide-in-from-top-6 duration-500">
-                        <DropdownMenuLabel className="p-8 pb-3 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 italic">
-                            Authentication
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator className="bg-white/5 mx-6" />
-                        <DropdownMenuItem className="p-5 cursor-pointer font-black text-[10px] uppercase tracking-widest rounded-2xl mx-3 my-1 hover:bg-white/5">Profile Archive</DropdownMenuItem>
-                        <DropdownMenuItem className="p-5 cursor-pointer font-black text-[10px] uppercase tracking-widest rounded-2xl mx-3 my-1 hover:bg-white/5">System Nodes</DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-white/5 mx-6" />
-                        <DropdownMenuItem className="p-5 text-destructive font-black text-[10px] uppercase tracking-[0.2em] cursor-pointer rounded-2xl mx-3 my-1 hover:bg-destructive/10 italic" onClick={() => logout()}>
-                            Terminate Session
+                    <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel className="font-semibold text-xs">Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-xs">Profile</DropdownMenuItem>
+                        <DropdownMenuItem className="text-xs">Settings</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-xs text-destructive font-semibold" onClick={() => logout()}>
+                            Logout
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-        </header>
 
-        {/* Mobile Sidebar Overlay */}
-        {isMobileMenuOpen && (
-            <div className="fixed inset-0 z-[100] lg:hidden">
-                <div className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => setIsMobileMenuOpen(false)} />
-                <div className="absolute inset-y-0 left-0 w-80 glass border-r border-white/10 animate-in slide-in-from-left duration-500 ease-out shadow-[50px_0_100px_-20px_rgba(0,0,0,0.8)]">
-                    <div className="p-10 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="p-2.5 bg-primary rounded-[18px] shadow-2xl shadow-primary/40 rotate-3">
-                                <Layout className="h-6 w-6 text-primary-foreground stroke-[2.5]" />
+            {/* Mobile Nav Overlay Placeholder */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    <div className="absolute inset-0 bg-black/20" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl animate-in slide-in-from-left">
+                        <div className="p-6 flex items-center justify-between border-b">
+                            <div className="flex items-center gap-2">
+                                <Layout className="h-5 w-5 text-primary" />
+                                <span className="font-bold">Synergy</span>
                             </div>
-                            <span className="text-2xl font-black tracking-tighter text-white italic">Synergy</span>
+                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
+                                <X className="h-5 w-5" />
+                            </Button>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="rounded-xl hover:bg-white/5 text-muted-foreground">
-                            <X className="h-6 w-6" />
-                        </Button>
-                    </div>
-                    
-                    <div className="px-10 py-8 space-y-6">
-                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 px-4">Navigation</p>
-                         <nav className="space-y-3">
-                            <Link href="/dashboard" className="flex items-center gap-5 px-6 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-2xl shadow-primary/20 neon-glow">
-                                <LayoutDashboard className="h-5 w-5 stroke-[2.5]" /> Dashboard
-                            </Link>
-                            <Link href="/projects" className="flex items-center gap-5 px-6 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-white/5 hover:text-white transition-all">
-                                <FolderKanban className="h-5 w-5 stroke-[1.5]" /> Projects
-                            </Link>
-                            <Link href="/tasks" className="flex items-center gap-5 px-6 py-4 rounded-[24px] text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-white/5 hover:text-white transition-all">
-                                <CheckSquare className="h-5 w-5 stroke-[1.5]" /> Tasks
-                            </Link>
-                         </nav>
+                        {/* Mobile links go here */}
                     </div>
                 </div>
-            </div>
-        )}
-        </>
+            )}
+        </header>
     );
 }
-
-// Helper icons for mobile nav placeholder
-function LayoutDashboard(props: any) { return <Layout {...props} /> }
-function FolderKanban(props: any) { return <Briefcase {...props} /> }
-function CheckSquare(props: any) { return <CheckCircle2 {...props} /> }
-function Briefcase(props: any) { return <Layout {...props} /> }
-function CheckCircle2(props: any) { return <Zap {...props} /> }

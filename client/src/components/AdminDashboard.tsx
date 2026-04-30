@@ -28,8 +28,7 @@ import {
     Users,
     Plus,
     UserPlus,
-    ArrowRight,
-    Zap
+    ArrowRight
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -37,7 +36,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import CreateProjectDialog from '@/components/CreateProjectDialog';
 
-const COLORS = ['var(--primary)', 'oklch(0.7 0.2 40)', 'oklch(0.6 0.2 200)', 'oklch(0.75 0.2 240)'];
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
 
 export default function AdminDashboard() {
     const [open, setOpen] = useState(false);
@@ -51,14 +50,12 @@ export default function AdminDashboard() {
 
     if (isLoading) return <DashboardSkeleton />;
     if (isError) return (
-        <div className="p-12 text-center glass rounded-3xl border border-destructive/20 animate-in-fade">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-foreground mb-2">Connection Error</h2>
-            <p className="text-muted-foreground max-w-md mx-auto font-medium">
-                We couldn't retrieve your dashboard metrics. Please ensure your database is active and try again.
-            </p>
-            <Button variant="outline" className="mt-6 rounded-2xl border-white/10 hover:bg-white/5" onClick={() => window.location.reload()}>
-                Retry Connection
+        <div className="p-12 text-center border rounded-2xl bg-card">
+            <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
+            <h2 className="text-lg font-semibold">Connection Error</h2>
+            <p className="text-muted-foreground mt-1">Failed to load dashboard data.</p>
+            <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
+                Retry
             </Button>
         </div>
     );
@@ -67,166 +64,125 @@ export default function AdminDashboard() {
 
     const dashboardStats = [
         { label: 'Active Projects', value: stats?.summary?.activeProjects || 0, icon: Briefcase, color: 'text-primary' },
-        { label: 'Team Members', value: stats?.summary?.totalMembers || 0, icon: Users, color: 'text-blue-400' },
-        { label: 'Total Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-emerald-400' },
-        { label: 'Overdue Tasks', value: stats?.summary?.overdueTasks || 0, icon: AlertCircle, color: 'text-destructive' },
+        { label: 'Team Members', value: stats?.summary?.totalMembers || 0, icon: Users, color: 'text-blue-500' },
+        { label: 'Total Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-emerald-500' },
+        { label: 'Overdue Tasks', value: stats?.summary?.overdueTasks || 0, icon: AlertCircle, color: 'text-red-500' },
     ];
 
     return (
-        <div className="space-y-12 animate-in-fade">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
-                        <Zap className="h-3 w-3" /> System Live
-                    </div>
-                    <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-white">Admin <span className="text-primary italic">Console</span></h1>
-                    <p className="text-muted-foreground text-lg font-medium opacity-80 italic">Orchestrate your team's workflow and performance.</p>
+        <div className="space-y-8 animate-in-fade">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
+                    <p className="text-muted-foreground text-sm">Welcome back, here's what's happening today.</p>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="secondary" size="lg" className="rounded-2xl font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                        <UserPlus className="mr-2 h-5 w-5" /> Add Member
+                <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                        <UserPlus className="mr-2 h-4 w-4" /> Add Member
                     </Button>
-                    <Button size="lg" className="bg-primary hover:brightness-110 text-primary-foreground rounded-2xl font-black uppercase tracking-widest text-[10px] px-8 shadow-2xl shadow-primary/30 transition-all hover:scale-105 active:scale-95" onClick={() => setOpen(true)}>
-                        <Plus className="mr-2 h-5 w-5 stroke-[3]" /> Create Project
+                    <Button size="sm" onClick={() => setOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" /> Create Project
                     </Button>
                 </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {dashboardStats.map((stat, i) => (
-                    <Card key={i} className="premium-card group border-none py-2">
-                        <CardContent className="p-8 flex items-center justify-between">
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">{stat.label}</p>
-                                <h3 className="text-5xl font-black text-white tracking-tighter">{stat.value}</h3>
+                    <Card key={i} className="shadow-sm">
+                        <CardContent className="p-6 flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground mb-1">{stat.label}</p>
+                                <h3 className="text-2xl font-bold">{stat.value}</h3>
                             </div>
-                            <div className={`p-5 rounded-[22px] bg-white/5 border border-white/5 group-hover:scale-110 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all duration-500`}>
-                                <stat.icon className={`h-8 w-8 ${stat.color} stroke-[1.5]`} />
+                            <div className="p-3 bg-muted rounded-xl">
+                                <stat.icon className={`h-5 w-5 ${stat.color}`} />
                             </div>
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
-            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="lg:col-span-2 premium-card border-none overflow-hidden">
-                    <CardHeader className="border-b border-white/5 bg-white/[0.02] pb-6">
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-black tracking-tight flex items-center gap-4 text-white italic uppercase text-xs">
-                                <div className="p-2.5 bg-primary/10 rounded-xl border border-primary/20">
-                                    <TrendingUp className="h-5 w-5 text-primary" />
-                                </div>
-                                Team Productivity
-                            </CardTitle>
-                            <div className="flex h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                        </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <Card className="lg:col-span-2 shadow-sm">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-primary" />
+                            Team Productivity
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-10 h-[400px]">
+                    <CardContent className="h-[300px] pt-4">
                         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                            <BarChart data={stats?.productivity?.map((p: any) => ({ ...p, day: p.day.toUpperCase() })) || []}>
-                                <defs>
-                                    <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.4} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                            <BarChart data={stats?.productivity || []}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis 
                                     dataKey="day" 
                                     axisLine={false} 
                                     tickLine={false} 
-                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 800 }}
-                                    dy={10}
+                                    tick={{ fill: '#64748b', fontSize: 12 }}
                                 />
                                 <YAxis 
                                     axisLine={false} 
                                     tickLine={false}
-                                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
+                                    tick={{ fill: '#64748b', fontSize: 12 }}
                                 />
                                 <Tooltip 
-                                    contentStyle={{ 
-                                        backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                                        borderRadius: '24px', 
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        backdropFilter: 'blur(10px)',
-                                        boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)'
-                                    }}
-                                    itemStyle={{ color: 'var(--primary)', fontWeight: 900 }}
+                                    cursor={{ fill: '#f8fafc' }}
+                                    contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
                                 />
-                                <Bar dataKey="count" fill="url(#barGradient)" radius={[8, 8, 0, 0]} barSize={32} />
+                                <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={32} />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                <Card className="premium-card border-none flex flex-col">
-                    <CardHeader className="border-b border-white/5 bg-white/[0.02]">
-                        <CardTitle className="text-xs font-black tracking-widest text-white italic uppercase">Distribution</CardTitle>
+                <Card className="shadow-sm">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium">Task Distribution</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-10 flex-1 flex items-center justify-center">
-                        <ResponsiveContainer width="100%" height={300} minWidth={0}>
+                    <CardContent className="h-[300px] flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height={240} minWidth={0}>
                             <PieChart>
                                 <Pie 
                                     data={statusData} 
-                                    innerRadius={85} 
-                                    outerRadius={115} 
-                                    paddingAngle={8}
+                                    innerRadius={60} 
+                                    outerRadius={80} 
+                                    paddingAngle={5}
                                     dataKey="value"
-                                    stroke="none"
                                 >
-                                    {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} className="hover:opacity-80 transition-opacity" />)}
+                                    {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                                 </Pie>
-                                <Tooltip 
-                                    contentStyle={{ 
-                                        backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                                        borderRadius: '20px', 
-                                        border: '1px solid rgba(255,255,255,0.1)' 
-                                    }}
-                                />
+                                <Tooltip />
                             </PieChart>
                         </ResponsiveContainer>
                     </CardContent>
-                    <div className="p-8 border-t border-white/5 grid grid-cols-2 gap-4">
-                        {statusData.map((item, i) => (
-                            <div key={i} className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                                <span className="text-[10px] font-black uppercase tracking-tight text-muted-foreground">{item.name}</span>
-                            </div>
-                        ))}
-                    </div>
                 </Card>
             </div>
 
-            <Card className="premium-card border-none overflow-hidden">
-                <CardHeader className="border-b border-white/5 bg-white/[0.02] p-8">
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="text-xs font-black tracking-widest text-white italic uppercase">Stream Activity</CardTitle>
-                        <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors">View All</Button>
-                    </div>
+            <Card className="shadow-sm">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="divide-y divide-white/5">
+                    <div className="divide-y">
                         {stats?.recentTasks?.map((task: any) => (
-                            <div key={task._id} className="flex items-center justify-between p-8 hover:bg-white/[0.02] transition-all duration-300 group">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-14 h-14 rounded-3xl bg-white/5 flex items-center justify-center text-primary font-black text-lg border border-white/10 group-hover:border-primary/40 group-hover:bg-primary/10 transition-all duration-500">
+                            <div key={task._id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
                                         {task.assignedTo?.name?.charAt(0) || '?'}
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="font-black text-xl text-white tracking-tight leading-none">{task.title}</p>
-                                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold flex items-center gap-2">
-                                            <span className="text-primary italic">{task.projectId?.name}</span>
-                                            <span className="opacity-20">/</span>
-                                            {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    <div>
+                                        <p className="text-sm font-semibold">{task.title}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {task.projectId?.name}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-6">
-                                    <Badge className="rounded-full px-6 py-2 text-[10px] font-black uppercase tracking-widest bg-white/5 text-slate-300 border-none group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
+                                <div className="flex items-center gap-3">
+                                    <Badge variant="outline" className="text-[10px] uppercase font-bold px-2 py-0">
                                         {task.status}
                                     </Badge>
-                                    <Button variant="ghost" size="icon" className="rounded-2xl hover:bg-white/5 transition-colors">
-                                        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                        <ArrowRight className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>
@@ -241,14 +197,14 @@ export default function AdminDashboard() {
 
 function DashboardSkeleton() {
     return (
-        <div className="space-y-12 p-8">
-            <Skeleton className="h-16 w-64 rounded-3xl" />
-            <div className="grid gap-6 md:grid-cols-4">
-                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-40 w-full rounded-[32px]" />)}
+        <div className="space-y-8">
+            <Skeleton className="h-8 w-48" />
+            <div className="grid gap-4 md:grid-cols-4">
+                {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
             </div>
-            <div className="grid gap-10 md:grid-cols-3">
-                <Skeleton className="md:col-span-2 h-[400px] rounded-[32px]" />
-                <Skeleton className="h-[400px] rounded-[32px]" />
+            <div className="grid gap-6 md:grid-cols-3">
+                <Skeleton className="md:col-span-2 h-[300px] rounded-xl" />
+                <Skeleton className="h-[300px] rounded-xl" />
             </div>
         </div>
     );

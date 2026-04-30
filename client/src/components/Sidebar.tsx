@@ -45,54 +45,52 @@ export default function Sidebar() {
     const menuItems = isAdmin ? adminItems : memberItems;
 
     return (
-        <aside className="hidden lg:flex flex-col w-72 glass border-r border-white/5 h-screen sticky top-0 z-50">
-            <div className="p-10 flex items-center gap-4">
-                <div className="p-2.5 bg-primary rounded-[18px] shadow-2xl shadow-primary/40 rotate-3">
-                    <Layout className="h-6 w-6 text-primary-foreground stroke-[2.5]" />
-                </div>
-                <span className="text-2xl font-black tracking-tighter text-white italic">
+        <aside className="hidden lg:flex flex-col w-64 bg-white border-r h-screen sticky top-0 z-50">
+            <div className="p-6 flex items-center gap-2 mb-4">
+                <Layout className="h-6 w-6 text-primary" />
+                <span className="text-xl font-bold tracking-tight text-slate-900">
                     Synergy
                 </span>
             </div>
             
-            <nav className="flex-1 px-8 space-y-3 overflow-y-auto py-6">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 px-4 mb-6">Network</p>
+            <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-4 mb-2 opacity-50">Menu</p>
                 {menuItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "flex items-center gap-5 px-5 py-4 rounded-[20px] text-xs font-black uppercase tracking-widest transition-all duration-500 group",
+                            "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                             pathname === item.href
-                                ? "bg-primary text-primary-foreground shadow-2xl shadow-primary/20 neon-glow"
-                                : "text-muted-foreground hover:bg-white/5 hover:text-white"
+                                ? "bg-primary/10 text-primary"
+                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         )}
                     >
                         <item.icon className={cn(
-                            "h-5 w-5 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
-                            pathname === item.href ? "text-primary-foreground stroke-[2.5]" : "text-muted-foreground/50 stroke-[1.5]"
+                            "h-4 w-4",
+                            pathname === item.href ? "text-primary" : "text-slate-400"
                         )} />
                         {item.label}
                     </Link>
                 ))}
             </nav>
 
-            <div className="p-8 mt-auto">
-                <div className="bg-white/5 rounded-[32px] p-6 border border-white/5 shadow-2xl">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary font-black border border-primary/20">
+            <div className="p-4 mt-auto">
+                <div className="bg-slate-50 rounded-xl p-4 border mb-2">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-xs">
                             {user?.name?.charAt(0) || 'U'}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-sm font-black truncate text-white leading-tight">{user?.name}</p>
-                            <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1 italic">{user?.role}</p>
+                            <p className="text-xs font-semibold truncate text-slate-900">{user?.name}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase">{user?.role}</p>
                         </div>
                     </div>
                     <button
                         onClick={() => logout()}
-                        className="flex items-center justify-center gap-3 px-6 py-4 w-full rounded-2xl text-[10px] font-black uppercase tracking-widest text-destructive hover:bg-destructive/10 transition-all border border-destructive/20 shadow-inner"
+                        className="flex items-center justify-center gap-2 px-3 py-2 w-full rounded-lg text-xs font-semibold text-destructive hover:bg-destructive/10 transition-colors border border-destructive/10"
                     >
-                        <LogOut className="h-4 w-4 stroke-[2.5]" />
+                        <LogOut className="h-4 w-4" />
                         Sign Out
                     </button>
                 </div>
