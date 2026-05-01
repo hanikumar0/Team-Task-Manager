@@ -26,7 +26,13 @@ export default function LoginPage() {
         setError('');
 
         try {
-            const { data } = await api.post('/auth/login', { email, password });
+            const trimmedEmail = email.trim().toLowerCase();
+            const trimmedPassword = password.trim();
+            const { data } = await api.post('/auth/login', { 
+                email: trimmedEmail, 
+                password: trimmedPassword 
+            });
+
             setUser(data);
             setToken(data.token);
             router.push('/dashboard');

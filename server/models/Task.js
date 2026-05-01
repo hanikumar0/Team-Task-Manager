@@ -52,7 +52,11 @@ const taskSchema = new mongoose.Schema({
         type: Number, // in hours
         default: 0
     }
-}, { timestamps: true });
+}, { 
+    timestamps: true 
+});
+
+
 
 taskSchema.index({ projectId: 1 });
 taskSchema.index({ assignedTo: 1 });
