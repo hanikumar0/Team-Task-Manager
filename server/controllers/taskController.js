@@ -125,3 +125,37 @@ exports.deleteTask = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.addComment = async (req, res) => {
+    try {
+        const { text } = req.body;
+        const task = await Task.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+
+        const comment = {
+            user: req.user.id,
+            text,
+            createdAt: new Date()
+        };
+
+        task.comments.push(comment);
+        await task.save();
+
+        // Log activity
+        await logActivity(req.user.id, 'Commented on Task', 'Task', task._id, `Added comment to: ${task.title}`);
+
+        // Notify project members
+        await notifyProjectMembers({
+            senderId: req.user.id,
+            projectId: task.projectId,
+            title: 'New Comment',
+            message: `${req.user.name} commented on "${task.title}": ${text.substring(0, 50)}...`,
+            type: 'comment',
+            link: `/tasks`
+        });
+
+        res.status(201).json(comment);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
