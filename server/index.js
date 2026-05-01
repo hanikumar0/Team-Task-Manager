@@ -62,26 +62,38 @@ app.get('/', (req, res) => {
 });
 
 // Database Connection
-const connectDB = async () => {
-    try {
-        if (mongoose.connection.readyState >= 1) return;
-        
-        if (!process.env.MONGODB_URI) {
-            throw new Error('MONGODB_URI is not defined in environment variables');
-        }
+let connectionPromise = null;
 
-        await mongoose.connect(process.env.MONGODB_URI, {
-            // Options for stable connection
-            bufferCommands: false, // Disable buffering so we fail fast if not connected
-        });
+const connectDB = async () => {
+    // 1. If already connected, return immediately
+    if (mongoose.connection.readyState === 1) return;
+
+    // 2. If a connection is already in progress, wait for it
+    if (connectionPromise) {
+        return connectionPromise;
+    }
+
+    // 3. Otherwise, start a new connection and store the promise
+    if (!process.env.MONGODB_URI) {
+        throw new Error('MONGODB_URI is not defined in environment variables');
+    }
+
+    console.log('Connecting to MongoDB...');
+    connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
+        bufferCommands: false,
+    });
+
+    try {
+        await connectionPromise;
         console.log('MongoDB Connected Successfully');
     } catch (err) {
         console.error('MongoDB Connection Error:', err.message);
-        throw err; // Propagate error to the middleware
+        connectionPromise = null; // Reset promise so we can retry on next request
+        throw err;
     }
 };
 
-// Execute connection
+// Execute initial connection
 connectDB();
 
 // Handle 404
