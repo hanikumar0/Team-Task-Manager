@@ -1,5 +1,6 @@
 const Project = require('../models/Project');
 const { logActivity } = require('./activityController');
+const { notifyProjectMembers, notifyUser } = require('../utils/notificationService');
 
 exports.getProjects = async (req, res) => {
     try {
@@ -105,6 +106,26 @@ exports.addMember = async (req, res) => {
         if (!project.members.includes(userId)) {
             project.members.push(userId);
             await project.save();
+
+            // Notifications
+            await notifyUser({
+                recipientId: userId,
+                senderId: req.user.id,
+                title: 'Added to Project',
+                message: `You have been added to the project: ${project.name}`,
+                type: 'assignment',
+                link: `/projects/${project._id}`
+            });
+
+            await notifyProjectMembers({
+                senderId: req.user.id,
+                projectId: project._id,
+                title: 'New Member Added',
+                message: `A new member has joined the project: ${project.name}`,
+                type: 'update',
+                link: `/projects/${project._id}`,
+                excludeIds: [userId] // Already notified directly
+            });
         }
         res.json(project);
     } catch (error) {

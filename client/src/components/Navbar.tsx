@@ -4,8 +4,6 @@ import { Bell, Search, Menu, X, Layout } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
 import { 
     DropdownMenu, 
     DropdownMenuContent, 
@@ -16,24 +14,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuthStore } from '@/store/useAuthStore';
-import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    const { data: notifications } = useQuery({
-        queryKey: ['notifications-nav'],
-        queryFn: async () => {
-            const { data } = await api.get('/notifications');
-            return data;
-        },
-        refetchInterval: 30000
-    });
-
-    const unreadCount = notifications?.filter((n: any) => !n.read).length || 0;
 
     return (
         <header className="h-16 bg-white border-b flex items-center justify-between px-4 lg:px-6 sticky top-0 z-40">
@@ -57,35 +43,7 @@ export default function Navbar() {
             </div>
             
             <div className="flex items-center gap-4">
-                <DropdownMenu>
-                    <DropdownMenuTrigger className="relative h-9 w-9 rounded-full inline-flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer outline-none">
-                        <Bell className="h-5 w-5 text-slate-500" />
-                        {unreadCount > 0 && (
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
-                        )}
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80">
-                        <DropdownMenuLabel className="font-semibold text-xs py-3 px-4">Notifications</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <div className="max-h-80 overflow-y-auto">
-                            {notifications?.length > 0 ? (
-                                notifications.slice(0, 5).map((n: any) => (
-                                    <DropdownMenuItem key={n._id} className="p-4 flex flex-col items-start gap-1">
-                                        <div className="flex justify-between w-full font-semibold text-xs">
-                                            <span>{n.title}</span>
-                                            <span className="text-[10px] text-muted-foreground font-normal">
-                                                {formatDistanceToNow(new Date(n.createdAt))} ago
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground line-clamp-1">{n.message}</p>
-                                    </DropdownMenuItem>
-                                ))
-                            ) : (
-                                <div className="p-8 text-center text-xs text-muted-foreground">No new notifications</div>
-                            )}
-                        </div>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <NotificationBell />
 
                 <div className="h-6 w-px bg-slate-200" />
 
