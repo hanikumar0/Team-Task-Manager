@@ -45,7 +45,16 @@ exports.updateTask = async (req, res) => {
         const task = await Task.findById(req.params.id);
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
+        const oldStatus = task.status;
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+        // Log Activity if status changed
+        if (req.body.status && req.body.status !== oldStatus) {
+            await logActivity(req.user.id, 'Updated Task Status', 'Task', task._id, `Changed status of "${task.title}" to ${req.body.status}`);
+        } else {
+            await logActivity(req.user.id, 'Updated Task', 'Task', task._id, `Updated task: ${task.title}`);
+        }
+
         res.json(updatedTask);
     } catch (error) {
         res.status(500).json({ message: error.message });
