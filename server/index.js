@@ -35,6 +35,20 @@ app.use(cors({
 
 app.use(express.json());
 
+// Database Connection Middleware
+const ensureDbConnected = async (req, res, next) => {
+    try {
+        if (mongoose.connection.readyState !== 1) {
+            await connectDB();
+        }
+        next();
+    } catch (error) {
+        res.status(500).json({ message: "Database connection failed" });
+    }
+};
+
+app.use(ensureDbConnected);
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
@@ -63,6 +77,7 @@ const connectDB = async () => {
         console.log('MongoDB Connected Successfully');
     } catch (err) {
         console.error('MongoDB Connection Error:', err.message);
+        throw err; // Propagate error to the middleware
     }
 };
 
