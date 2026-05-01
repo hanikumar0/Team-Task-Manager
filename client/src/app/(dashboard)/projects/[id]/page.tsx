@@ -5,7 +5,7 @@ import api from '@/lib/api';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { 
     Calendar, 
     Users, 
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export default function ProjectDetailPage() {
     const { id } = useParams();
@@ -48,9 +49,12 @@ export default function ProjectDetailPage() {
                 <p className="text-slate-500 mt-2 max-w-sm">
                     We couldn't retrieve the details for this project. It may have been deleted or you may not have permission to view it.
                 </p>
-                <Button className="mt-6" variant="outline" asChild>
-                    <Link href="/projects">Back to Projects</Link>
-                </Button>
+                <Link 
+                    href="/projects" 
+                    className={cn(buttonVariants({ variant: 'outline' }), "mt-6")}
+                >
+                    Back to Projects
+                </Link>
             </div>
         );
     }
