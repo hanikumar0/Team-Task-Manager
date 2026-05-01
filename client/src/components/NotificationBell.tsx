@@ -6,6 +6,7 @@ import api from '@/lib/api';
 import { 
     DropdownMenu, 
     DropdownMenuContent, 
+    DropdownMenuGroup,
     DropdownMenuItem, 
     DropdownMenuLabel, 
     DropdownMenuSeparator, 
@@ -15,10 +16,12 @@ import { Bell, Check, Trash2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function NotificationBell() {
+    const router = useRouter();
     const queryClient = useQueryClient();
     
     // Fetch notifications with polling
@@ -33,6 +36,10 @@ export default function NotificationBell() {
     });
 
     const unreadCount = notifications.filter((n: any) => !n.read).length;
+
+    const handleNotificationClick = (link: string) => {
+        if (link) router.push(link);
+    };
 
     const markReadMutation = useMutation({
         mutationFn: async () => {
@@ -64,7 +71,9 @@ export default function NotificationBell() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80 p-0 shadow-xl border-slate-200">
                 <div className="flex items-center justify-between p-4 border-bottom bg-slate-50/50">
-                    <DropdownMenuLabel className="p-0 font-bold text-slate-800">Notifications</DropdownMenuLabel>
+                    <DropdownMenuGroup>
+                        <DropdownMenuLabel className="p-0 font-bold text-slate-800">Notifications</DropdownMenuLabel>
+                    </DropdownMenuGroup>
                     <div className="flex gap-2">
                         {unreadCount > 0 && (
                             <button 
@@ -99,23 +108,21 @@ export default function NotificationBell() {
                                     "p-4 flex flex-col items-start gap-1 cursor-pointer border-b border-slate-50 last:border-0",
                                     !notification.read && "bg-indigo-50/30"
                                 )}
-                                asChild
+                                onClick={() => handleNotificationClick(notification.link)}
                             >
-                                <Link href={notification.link || '#'}>
-                                    <div className="flex justify-between items-start w-full gap-2">
-                                        <p className={cn("text-xs font-bold leading-tight", !notification.read ? "text-slate-900" : "text-slate-600")}>
-                                            {notification.title}
-                                        </p>
-                                        {!notification.read && <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 mt-1" />}
-                                    </div>
-                                    <p className="text-[11px] text-slate-500 leading-normal line-clamp-2">
-                                        {notification.message}
+                                <div className="flex justify-between items-start w-full gap-2">
+                                    <p className={cn("text-xs font-bold leading-tight", !notification.read ? "text-slate-900" : "text-slate-600")}>
+                                        {notification.title}
                                     </p>
-                                    <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-1">
-                                        <Clock className="h-2.5 w-2.5" />
-                                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
-                                    </div>
-                                </Link>
+                                    {!notification.read && <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 mt-1" />}
+                                </div>
+                                <p className="text-[11px] text-slate-500 leading-normal line-clamp-2">
+                                    {notification.message}
+                                </p>
+                                <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-1">
+                                    <Clock className="h-2.5 w-2.5" />
+                                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                                </div>
                             </DropdownMenuItem>
                         ))
                     )}

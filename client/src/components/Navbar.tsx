@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { 
     DropdownMenu, 
     DropdownMenuContent, 
+    DropdownMenuGroup,
     DropdownMenuItem, 
     DropdownMenuLabel, 
     DropdownMenuSeparator, 
@@ -61,7 +62,9 @@ export default function Navbar() {
                         </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuLabel className="font-semibold text-xs">Account</DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="font-semibold text-xs">Account</DropdownMenuLabel>
+                        </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-xs">Profile</DropdownMenuItem>
                         <DropdownMenuItem className="text-xs">Settings</DropdownMenuItem>

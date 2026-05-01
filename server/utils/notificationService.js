@@ -22,19 +22,22 @@ const notifyProjectMembers = async ({
 }) => {
     try {
         const project = await Project.findById(projectId).populate('owner members');
-        if (!project) return;
+        if (!project) {
+            console.error('Notification Error: Project not found', projectId);
+            return;
+        }
+
+        const senderIdStr = senderId.toString();
 
         // Collect all unique members (owner + members)
         const recipients = [
             project.owner._id.toString(),
-            ...project.members.map(m => m._id.toString())
-        ].filter(id => 
-            id !== senderId.toString() && // Don't notify sender
-            !excludeIds.includes(id) // Don't notify excluded IDs
-        );
+            ...(project.members || []).map(m => m?._id?.toString() || m?.toString())
+        ].filter(id => id && id !== senderIdStr && !excludeIds.includes(id));
 
         // Remove duplicates
         const uniqueRecipients = [...new Set(recipients)];
+        console.log(`Sending notifications to ${uniqueRecipients.length} recipients for project ${project.name}`);
 
         // Create notification objects
         const notifications = uniqueRecipients.map(recipientId => ({
