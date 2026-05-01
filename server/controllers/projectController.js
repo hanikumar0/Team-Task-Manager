@@ -24,8 +24,12 @@ exports.getProjectById = async (req, res) => {
         if (!project) return res.status(404).json({ message: 'Project not found' });
         
         // Check access
-        if (project.owner.toString() !== req.user.id && !project.members.includes(req.user.id)) {
-            return res.status(401).json({ message: 'Not authorized' });
+        const isOwner = project.owner._id.toString() === req.user.id;
+        const isMember = project.members.some(m => m._id.toString() === req.user.id);
+        const isAdmin = req.user.role === 'Admin';
+
+        if (!isOwner && !isMember && !isAdmin) {
+            return res.status(401).json({ message: 'Not authorized to view this project' });
         }
         
         res.json(project);

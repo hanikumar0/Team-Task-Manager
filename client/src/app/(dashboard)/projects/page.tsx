@@ -98,18 +98,18 @@ export default function ProjectsPage() {
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 text-sm text-slate-500">
                                         <Calendar size={16} />
-                                        <span>Due: {new Date(project.endDate).toLocaleDateString() || 'No date'}</span>
+                                        <span>Due: {project.endDate ? new Date(project.endDate).toLocaleDateString() : 'No date'}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-slate-500">
                                         <Users size={16} />
                                         <span>{project.members?.length || 0} Members</span>
                                     </div>
                                     <div className="w-full bg-slate-100 h-2 rounded-full mt-4">
-                                        <div className="bg-indigo-600 h-full rounded-full" style={{ width: '65%' }}></div>
+                                        <div className="bg-indigo-600 h-full rounded-full" style={{ width: `${project.progress || 0}%` }}></div>
                                     </div>
                                     <div className="flex justify-between text-xs font-medium text-slate-500">
                                         <span>Progress</span>
-                                        <span>65%</span>
+                                        <span>{project.progress || 0}%</span>
                                     </div>
                                 </div>
                             </CardContent>

@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function ProjectDetailPage() {
     const { id } = useParams();
 
-    const { data: project, isLoading: isProjectLoading } = useQuery({
+    const { data: project, isLoading: isProjectLoading, isError: isProjectError } = useQuery({
         queryKey: ['project', id],
         queryFn: async () => {
             const { data } = await api.get(`/projects/${id}`);
@@ -28,7 +28,7 @@ export default function ProjectDetailPage() {
         }
     });
 
-    const { data: tasks, isLoading: isTasksLoading } = useQuery({
+    const { data: tasks, isLoading: isTasksLoading, isError: isTasksError } = useQuery({
         queryKey: ['project-tasks', id],
         queryFn: async () => {
             const { data } = await api.get(`/tasks?projectId=${id}`);
@@ -37,6 +37,23 @@ export default function ProjectDetailPage() {
     });
 
     if (isProjectLoading) return <ProjectDetailSkeleton />;
+
+    if (isProjectError) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="p-4 bg-red-50 rounded-full mb-4">
+                    <Clock className="h-8 w-8 text-red-600" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900">Project Not Found</h2>
+                <p className="text-slate-500 mt-2 max-w-sm">
+                    We couldn't retrieve the details for this project. It may have been deleted or you may not have permission to view it.
+                </p>
+                <Button className="mt-6" variant="outline" asChild>
+                    <Link href="/projects">Back to Projects</Link>
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -66,7 +83,9 @@ export default function ProjectDetailPage() {
                     </CardHeader>
                     <CardContent className="flex items-center gap-3">
                         <Calendar className="text-indigo-600" size={20} />
-                        <span className="text-sm font-semibold">Ends {new Date(project?.endDate).toLocaleDateString()}</span>
+                        <span className="text-sm font-semibold">
+                            {project?.endDate ? `Ends ${new Date(project.endDate).toLocaleDateString()}` : 'No end date set'}
+                        </span>
                     </CardContent>
                 </Card>
                 <Card>
