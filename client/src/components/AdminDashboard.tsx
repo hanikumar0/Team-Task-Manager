@@ -2,24 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
+import dynamic from 'next/dynamic';
 import { 
     Card, 
     CardContent, 
     CardHeader, 
     CardTitle 
 } from '@/components/ui/card';
-import { 
-    BarChart, 
-    Bar, 
-    XAxis, 
-    YAxis, 
-    CartesianGrid, 
-    Tooltip, 
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell
-} from 'recharts';
 import { 
     CheckCircle2, 
     AlertCircle, 
@@ -30,7 +19,7 @@ import {
     UserPlus,
     ArrowRight
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -39,17 +28,44 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 
+// Lazy load heavy chart components
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), { ssr: false });
+const Pie = dynamic(() => import('recharts').then(mod => mod.Pie), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
+
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
 
 export default function AdminDashboard() {
     const [open, setOpen] = useState(false);
+    
     const { data: stats, isLoading, isError } = useQuery({
         queryKey: ['admin-stats'],
         queryFn: async () => {
             const { data } = await api.get('/dashboard/stats');
             return data;
-        }
+        },
+        staleTime: 60000, // Keep data fresh for 1 minute
     });
+
+    // Memoize chart data to prevent unnecessary recalculations on re-renders
+    const statusData = useMemo(() => 
+        Object.entries(stats?.statusDistribution || {}).map(([name, value]) => ({ name, value })),
+        [stats?.statusDistribution]
+    );
+
+    const dashboardStats = useMemo(() => [
+        { label: 'Active Projects', value: stats?.summary?.activeProjects || 0, icon: Briefcase, color: 'text-primary' },
+        { label: 'Team Members', value: stats?.summary?.totalMembers || 0, icon: Users, color: 'text-blue-500' },
+        { label: 'Total Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-emerald-500' },
+        { label: 'Overdue Tasks', value: stats?.summary?.overdueTasks || 0, icon: AlertCircle, color: 'text-red-500' },
+    ], [stats?.summary]);
 
     if (isLoading) return <DashboardSkeleton />;
     if (isError) return (
@@ -62,15 +78,6 @@ export default function AdminDashboard() {
             </Button>
         </div>
     );
-
-    const statusData = Object.entries(stats?.statusDistribution || {}).map(([name, value]) => ({ name, value }));
-
-    const dashboardStats = [
-        { label: 'Active Projects', value: stats?.summary?.activeProjects || 0, icon: Briefcase, color: 'text-primary' },
-        { label: 'Team Members', value: stats?.summary?.totalMembers || 0, icon: Users, color: 'text-blue-500' },
-        { label: 'Total Tasks', value: stats?.summary?.totalTasks || 0, icon: CheckCircle2, color: 'text-emerald-500' },
-        { label: 'Overdue Tasks', value: stats?.summary?.overdueTasks || 0, icon: AlertCircle, color: 'text-red-500' },
-    ];
 
     return (
         <div className="space-y-8 animate-in-fade">

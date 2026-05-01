@@ -9,7 +9,7 @@ exports.getTasks = async (req, res) => {
         
         if (projectId) {
             query.projectId = projectId;
-        } else {
+        } else if (req.user.role !== 'Admin') {
             query.$or = [
                 { assignedTo: req.user.id },
                 { createdBy: req.user.id }
@@ -17,9 +17,26 @@ exports.getTasks = async (req, res) => {
         }
 
         const tasks = await Task.find(query)
+            .populate('projectId', 'name')
             .populate('assignedTo', 'name email avatar')
-            .populate('createdBy', 'name email');
+            .sort({ createdAt: -1 })
+            .lean();
         res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getTaskById = async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id)
+            .populate('projectId', 'name')
+            .populate('assignedTo', 'name email avatar')
+            .populate('comments.user', 'name avatar')
+            .lean();
+            
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+        res.json(task);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -98,26 +115,12 @@ exports.deleteTask = async (req, res) => {
         const task = await Task.findById(req.params.id);
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
-        await task.deleteOne();
+        await Task.findByIdAndDelete(req.params.id);
+        
+        // Log Activity
+        await logActivity(req.user.id, 'Deleted Task', 'Task', req.params.id, `Deleted task: ${task.title}`);
+        
         res.json({ message: 'Task removed' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-exports.addComment = async (req, res) => {
-    try {
-        const task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ message: 'Task not found' });
-
-        const comment = {
-            user: req.user.id,
-            text: req.body.text
-        };
-
-        task.comments.push(comment);
-        await task.save();
-        res.json(task);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

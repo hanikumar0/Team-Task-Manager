@@ -4,12 +4,16 @@ const { notifyProjectMembers, notifyUser } = require('../utils/notificationServi
 
 exports.getProjects = async (req, res) => {
     try {
-        const projects = await Project.find({
+        const query = req.user.role === 'Admin' ? {} : {
             $or: [
                 { owner: req.user.id },
                 { members: req.user.id }
             ]
-        }).populate('owner', 'name email').populate('members', 'name email');
+        };
+        const projects = await Project.find(query)
+            .populate('owner', 'name email')
+            .populate('members', 'name email')
+            .lean();
         res.json(projects);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -19,8 +23,9 @@ exports.getProjects = async (req, res) => {
 exports.getProjectById = async (req, res) => {
     try {
         const project = await Project.findById(req.params.id)
-            .populate('owner', 'name email')
-            .populate('members', 'name email');
+            .populate('owner', 'name email avatar')
+            .populate('members', 'name email avatar')
+            .lean();
         
         if (!project) return res.status(404).json({ message: 'Project not found' });
         
