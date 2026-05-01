@@ -29,11 +29,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Skeleton } from '@/components/ui/skeleton';
+import TaskDetailsDialog from '@/components/TaskDetailsDialog';
 
 export default function CalendarPage() {
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [detailOpen, setDetailOpen] = useState(false);
+    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
     const { user } = useAuthStore();
-    const isAdmin = user?.role === 'Admin';
+    const isAdmin = user?.role === 'admin';
+
 
     const { data: tasks, isLoading } = useQuery({
         queryKey: ['tasks-calendar'],
@@ -132,6 +136,7 @@ export default function CalendarPage() {
                                             task.priority === 'High' ? 'bg-orange-50 border-orange-100 text-orange-700' :
                                             'bg-indigo-50 border-indigo-100 text-indigo-700'
                                         }`}
+                                        onClick={() => { setSelectedTaskId(task._id); setDetailOpen(true); }}
                                     >
                                         {task.title}
                                     </div>
@@ -158,6 +163,7 @@ export default function CalendarPage() {
                 {renderDays()}
                 {renderCells()}
             </div>
+            <TaskDetailsDialog taskId={selectedTaskId} open={detailOpen} onOpenChange={setDetailOpen} />
         </div>
     );
 }

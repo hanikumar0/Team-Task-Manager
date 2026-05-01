@@ -15,7 +15,8 @@ import CreateProjectDialog from '@/components/CreateProjectDialog';
 export default function ProjectsPage() {
     const [open, setOpen] = useState(false);
     const { user } = useAuthStore();
-    const isAdmin = user?.role === 'Admin';
+    const isAdmin = user?.role === 'admin';
+
     
     const { data: projects, isLoading } = useQuery({
         queryKey: ['projects'],

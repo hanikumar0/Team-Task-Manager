@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
+import { useAuthStore } from '@/store/useAuthStore';
+
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +23,11 @@ import { cn } from '@/lib/utils';
 export default function ProjectDetailPage() {
     const { id } = useParams();
 
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'admin';
+
     const { data: project, isLoading: isProjectLoading, isError: isProjectError } = useQuery({
+
         queryKey: ['project', id],
         queryFn: async () => {
             const { data } = await api.get(`/projects/${id}`);
@@ -75,9 +81,12 @@ export default function ProjectDetailPage() {
                     </div>
                     <p className="text-slate-500 max-w-2xl">{project?.description}</p>
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="mr-2 h-4 w-4" /> New Task
-                </Button>
+                {isAdmin && (
+                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                        <Plus className="mr-2 h-4 w-4" /> New Task
+                    </Button>
+                )}
+
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">

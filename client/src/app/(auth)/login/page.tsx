@@ -33,9 +33,16 @@ export default function LoginPage() {
                 password: trimmedPassword 
             });
 
-            setUser(data);
+            setUser(data.user);
             setToken(data.token);
-            router.push('/dashboard');
+            
+            // Phase 5: Redirect by role (lowercase comparison)
+            if (data.user.role === 'admin') {
+                router.push('/admin/dashboard');
+            } else {
+                router.push('/member/dashboard');
+            }
+
         } catch (err: any) {
             setError(err.response?.data?.message || 'Invalid email or password');
         } finally {

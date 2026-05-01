@@ -87,6 +87,8 @@ exports.register = async (req, res) => {
         }
 
         email = email.trim().toLowerCase();
+        // Ensure role is lowercase and valid, default to member
+        const finalRole = (role && role.toLowerCase() === 'admin') ? 'admin' : 'member';
 
         const userExists = await User.findOne({ email });
         if (userExists) {
@@ -96,12 +98,11 @@ exports.register = async (req, res) => {
             });
         }
 
-        // User model pre-save hook will handle hashing
         const user = await User.create({
             name,
             email,
             password,
-            role
+            role: finalRole
         });
 
         if (user) {
@@ -125,6 +126,7 @@ exports.register = async (req, res) => {
         });
     }
 };
+
 
 exports.getMe = async (req, res) => {
     try {
@@ -159,7 +161,8 @@ exports.deleteUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        if (user.role === 'Admin') {
+        if (user.role === 'admin') {
+
             return res.status(403).json({ success: false, message: 'Cannot delete an administrator' });
         }
 

@@ -28,7 +28,7 @@ import InviteMemberDialog from '@/components/InviteMemberDialog';
 export default function TeamPage() {
     const [open, setOpen] = useState(false);
     const { user } = useAuthStore();
-    const isAdmin = user?.role === 'Admin';
+    const isAdmin = user?.role === 'admin';
     const queryClient = useQueryClient();
 
     const { data: members, isLoading } = useQuery({
@@ -112,7 +112,7 @@ export default function TeamPage() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-1.5 text-sm text-slate-700">
-                                            {member.role === 'Admin' ? <Shield size={14} className="text-indigo-600" /> : null}
+                                            {member.role === 'admin' ? <Shield size={14} className="text-indigo-600" /> : null}
                                             {member.role}
                                         </div>
                                     </TableCell>
@@ -133,15 +133,15 @@ export default function TeamPage() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end" className="w-40">
                                                 <DropdownMenuItem 
-                                                    className={`text-red-600 focus:text-red-600 ${member.role === 'Admin' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                    className={`text-red-600 focus:text-red-600 ${member.role === 'admin' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                                     onClick={() => {
-                                                        if (member.role !== 'Admin') {
+                                                        if (member.role !== 'admin') {
                                                             if (confirm(`Are you sure you want to remove ${member.name}?`)) {
                                                                 deleteMutation.mutate(member._id);
                                                             }
                                                         }
                                                     }}
-                                                    disabled={member.role === 'Admin'}
+                                                    disabled={member.role === 'admin'}
                                                 >
                                                     <Trash2 size={16} className="mr-2" /> Remove Member
                                                 </DropdownMenuItem>

@@ -25,7 +25,7 @@ export default function InviteMemberDialog({ open, onOpenChange }: InviteMemberD
         name: '',
         email: '',
         password: 'password123', // Default password for new members
-        role: 'Member'
+        role: 'member'
     });
     const queryClient = useQueryClient();
 
@@ -34,7 +34,7 @@ export default function InviteMemberDialog({ open, onOpenChange }: InviteMemberD
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['team-members'] });
             onOpenChange(false);
-            setFormData({ name: '', email: '', password: 'password123', role: 'Member' });
+            setFormData({ name: '', email: '', password: 'password123', role: 'member' });
         }
     });
 
@@ -79,8 +79,8 @@ export default function InviteMemberDialog({ open, onOpenChange }: InviteMemberD
                             value={formData.role}
                             onChange={(e) => setFormData({...formData, role: e.target.value})}
                         >
-                            <option value="Member">Member</option>
-                            <option value="Admin">Admin</option>
+                            <option value="member">Member</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <p className="text-[10px] text-slate-500 italic">

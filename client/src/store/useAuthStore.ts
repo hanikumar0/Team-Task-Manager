@@ -5,7 +5,8 @@ interface User {
     _id: string;
     name: string;
     email: string;
-    role: 'Admin' | 'Member';
+    role: 'admin' | 'member';
+
     avatar?: string;
 }
 

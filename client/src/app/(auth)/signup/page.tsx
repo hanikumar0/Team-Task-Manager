@@ -17,7 +17,7 @@ export default function SignupPage() {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'Member'
+        role: 'member'
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -44,9 +44,15 @@ export default function SignupPage() {
                 password: formData.password,
                 role: formData.role
             });
-            setUser(data);
+            setUser(data.user);
             setToken(data.token);
-            router.push('/dashboard');
+            
+            // Phase 5: Redirect by role
+            if (data.user.role === 'admin') {
+                router.push('/admin/dashboard');
+            } else {
+                router.push('/member/dashboard');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Something went wrong');
         } finally {
@@ -103,8 +109,8 @@ export default function SignupPage() {
                             value={formData.role}
                             onChange={handleChange}
                         >
-                            <option value="Member">Member</option>
-                            <option value="Admin">Admin</option>
+                            <option value="member">Member</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                     <div className="space-y-2">

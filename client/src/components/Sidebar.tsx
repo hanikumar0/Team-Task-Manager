@@ -21,10 +21,10 @@ import { useAuthStore } from '@/store/useAuthStore';
 export default function Sidebar() {
     const pathname = usePathname();
     const { logout, user } = useAuthStore();
-    const isAdmin = user?.role === 'Admin';
+    const isAdmin = user?.role === 'admin';
 
     const adminItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
         { icon: FolderKanban, label: 'Projects', href: '/projects' },
         { icon: CheckSquare, label: 'Tasks', href: '/tasks' },
         { icon: Users, label: 'Team Members', href: '/team' },
@@ -35,12 +35,13 @@ export default function Sidebar() {
     ];
 
     const memberItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+        { icon: LayoutDashboard, label: 'Dashboard', href: '/member/dashboard' },
         { icon: FolderKanban, label: 'My Projects', href: '/projects' },
         { icon: CheckSquare, label: 'My Tasks', href: '/tasks' },
         { icon: Calendar, label: 'Calendar', href: '/calendar' },
         { icon: UserCircle, label: 'Profile', href: '/settings' },
     ];
+
 
     const menuItems = isAdmin ? adminItems : memberItems;
 

@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 
 exports.getDashboardStats = async (req, res) => {
     try {
-        const isAdmin = req.user.role === 'Admin';
+        const isAdmin = req.user.role === 'admin';
+
         
         // Base queries
         const projectQuery = isAdmin ? {} : { $or: [{ owner: req.user.id }, { members: req.user.id }] };

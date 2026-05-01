@@ -13,7 +13,8 @@ export default function DashboardPage() {
 
     return (
         <>
-            {user.role === 'Admin' ? <AdminDashboard /> : <MemberDashboard />}
+            {user.role === 'admin' ? <AdminDashboard /> : <MemberDashboard />}
+
         </>
     );
 }

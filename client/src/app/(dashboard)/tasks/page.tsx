@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import CreateTaskDialog from '@/components/CreateTaskDialog';
+import TaskDetailsDialog from '@/components/TaskDetailsDialog';
 import { toast } from 'sonner';
 
 const columns = [
@@ -38,10 +39,13 @@ const columns = [
 
 export default function TasksPage() {
     const [open, setOpen] = useState(false);
+    const [detailOpen, setDetailOpen] = useState(false);
+    const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
     const [selectedStatus, setSelectedStatus] = useState('Todo');
     const { user } = useAuthStore();
     const queryClient = useQueryClient();
-    const isAdmin = user?.role === 'Admin';
+    const isAdmin = user?.role === 'admin';
+
 
     const { data: tasks, isLoading } = useQuery({
         queryKey: ['tasks'],
@@ -115,7 +119,11 @@ export default function TasksPage() {
 
                         <div className="flex-1 flex flex-col gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100">
                             {getTasksByStatus(column.id).map((task: any) => (
-                                <Card key={task._id} className="shadow-sm border-none hover:shadow-md hover:ring-1 hover:ring-slate-200 transition-all duration-200">
+                                <Card 
+                                    key={task._id} 
+                                    className="shadow-sm border-none hover:shadow-md hover:ring-1 hover:ring-slate-200 transition-all duration-200 cursor-pointer"
+                                    onClick={() => { setSelectedTaskId(task._id); setDetailOpen(true); }}
+                                >
                                     <CardContent className="p-4 space-y-4">
                                         <div className="flex justify-between items-start">
                                             <Badge variant="secondary" className={
@@ -147,7 +155,14 @@ export default function TasksPage() {
                                                         ))}
                                                     </DropdownMenuGroup>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-xs text-red-600 cursor-pointer">
+                                                    <DropdownMenuItem 
+                                                        className="text-xs text-red-600 cursor-pointer"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedTaskId(task._id);
+                                                            setDetailOpen(true);
+                                                        }}
+                                                    >
                                                         View Details
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
@@ -194,6 +209,7 @@ export default function TasksPage() {
                 ))}
             </div>
             <CreateTaskDialog open={open} onOpenChange={setOpen} initialStatus={selectedStatus} />
+            <TaskDetailsDialog taskId={selectedTaskId} open={detailOpen} onOpenChange={setDetailOpen} />
         </div>
     );
 }

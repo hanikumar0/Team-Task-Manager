@@ -17,16 +17,34 @@ import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useAuthStore } from '@/store/useAuthStore';
+import { Shield } from 'lucide-react';
+
 export default function ActivityLogPage() {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'admin';
+
     const { data: activities, isLoading } = useQuery({
         queryKey: ['activities'],
         queryFn: async () => {
             const { data } = await api.get('/activity');
             return data;
-        }
+        },
+        enabled: isAdmin
     });
 
+    if (!isAdmin) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
+                <Shield className="h-16 w-16 text-slate-300" />
+                <h2 className="text-2xl font-bold text-slate-900">Access Denied</h2>
+                <p className="text-slate-500">Only administrators can access the activity logs.</p>
+            </div>
+        );
+    }
+
     if (isLoading) return <ActivitySkeleton />;
+
 
     return (
         <div className="space-y-6">

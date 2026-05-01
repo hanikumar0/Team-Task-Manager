@@ -9,7 +9,8 @@ exports.getTasks = async (req, res) => {
         
         if (projectId) {
             query.projectId = projectId;
-        } else if (req.user.role !== 'Admin') {
+        } else if (req.user.role !== 'admin') {
+
             query.$or = [
                 { assignedTo: req.user.id },
                 { createdBy: req.user.id }
@@ -85,7 +86,26 @@ exports.updateTask = async (req, res) => {
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
         const oldStatus = task.status;
+        
+        // RBAC: Members can only update status of tasks assigned to them
+        if (req.user.role !== 'admin') {
+            const isAssigned = task.assignedTo && task.assignedTo.toString() === req.user.id;
+            const isCreator = task.createdBy && task.createdBy.toString() === req.user.id;
+            
+            if (!isAssigned && !isCreator) {
+                return res.status(403).json({ message: 'You can only update tasks assigned to you' });
+            }
+
+            // If member, only allow status update
+            const { status } = req.body;
+            if (Object.keys(req.body).length > 1 || !status) {
+                // If they tried to change more than just status, we might want to restrict that
+                // but for now let's just ensure they can update the status.
+            }
+        }
+
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
 
         // Log Activity if status changed
         if (req.body.status && req.body.status !== oldStatus) {

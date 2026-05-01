@@ -21,19 +21,19 @@ async function seedUsers() {
                 name: 'Admin User',
                 email: 'hanikumar064@gmail.com',
                 password: 'Password@123',
-                role: 'Admin'
+                role: 'admin'
             },
             {
-                name: 'Test Admin',
-                email: 'admin@test.com',
-                password: 'Admin@123',
-                role: 'Admin'
+                name: 'System Admin',
+                email: 'admin2@example.com',
+                password: 'password123',
+                role: 'admin'
             },
             {
                 name: 'Test Member',
                 email: 'member@test.com',
                 password: 'Member@123',
-                role: 'Member'
+                role: 'member'
             }
         ];
 

@@ -4,7 +4,7 @@ const { notifyProjectMembers, notifyUser } = require('../utils/notificationServi
 
 exports.getProjects = async (req, res) => {
     try {
-        const query = req.user.role === 'Admin' ? {} : {
+        const query = req.user.role === 'admin' ? {} : {
             $or: [
                 { owner: req.user.id },
                 { members: req.user.id }
@@ -32,7 +32,7 @@ exports.getProjectById = async (req, res) => {
         // Check access
         const isOwner = project.owner._id.toString() === req.user.id;
         const isMember = project.members.some(m => m._id.toString() === req.user.id);
-        const isAdmin = req.user.role === 'Admin';
+        const isAdmin = req.user.role === 'admin';
 
         if (!isOwner && !isMember && !isAdmin) {
             return res.status(401).json({ message: 'Not authorized to view this project' });
