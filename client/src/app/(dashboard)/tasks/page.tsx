@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -130,19 +131,21 @@ export default function TasksPage() {
                                                     <MoreHorizontal size={18} />
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="w-48">
-                                                    <DropdownMenuLabel className="text-xs">Quick Actions</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuLabel className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Move To Status</DropdownMenuLabel>
-                                                    {columns.filter(c => c.id !== task.status).map(c => (
-                                                        <DropdownMenuItem 
-                                                            key={c.id} 
-                                                            className="text-xs cursor-pointer"
-                                                            onClick={() => updateStatusMutation.mutate({ taskId: task._id, status: c.id })}
-                                                        >
-                                                            <ArrowRightLeft className="mr-2 h-3.5 w-3.5 text-slate-400" />
-                                                            {c.title}
-                                                        </DropdownMenuItem>
-                                                    ))}
+                                                    <DropdownMenuGroup>
+                                                        <DropdownMenuLabel className="text-xs">Quick Actions</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuLabel className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Move To Status</DropdownMenuLabel>
+                                                        {columns.filter(c => c.id !== task.status).map(c => (
+                                                            <DropdownMenuItem 
+                                                                key={c.id} 
+                                                                className="text-xs cursor-pointer"
+                                                                onClick={() => updateStatusMutation.mutate({ taskId: task._id, status: c.id })}
+                                                            >
+                                                                <ArrowRightLeft className="mr-2 h-3.5 w-3.5 text-slate-400" />
+                                                                {c.title}
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuGroup>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem className="text-xs text-red-600 cursor-pointer">
                                                         View Details
