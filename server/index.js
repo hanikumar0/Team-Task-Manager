@@ -48,12 +48,26 @@ app.get('/', (req, res) => {
 });
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB Connected Successfully'))
-    .catch(err => {
-        console.error('MongoDB Connection Error:', err);
-        // Do not crash the process in serverless, let the function handle it
-    });
+const connectDB = async () => {
+    try {
+        if (mongoose.connection.readyState >= 1) return;
+        
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is not defined in environment variables');
+        }
+
+        await mongoose.connect(process.env.MONGODB_URI, {
+            // Options for stable connection
+            bufferCommands: false, // Disable buffering so we fail fast if not connected
+        });
+        console.log('MongoDB Connected Successfully');
+    } catch (err) {
+        console.error('MongoDB Connection Error:', err.message);
+    }
+};
+
+// Execute connection
+connectDB();
 
 // Handle 404
 app.use((req, res) => {
