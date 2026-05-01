@@ -11,16 +11,16 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const { token } = useAuthStore();
+    const { token, _hasHydrated } = useAuthStore();
     const router = useRouter();
 
     useEffect(() => {
-        if (!token) {
+        if (_hasHydrated && !token) {
             router.push('/login');
         }
-    }, [token, router]);
+    }, [token, _hasHydrated, router]);
 
-    if (!token) return null;
+    if (!_hasHydrated || !token) return null;
 
     return (
         <div className="flex min-h-screen bg-slate-50">
